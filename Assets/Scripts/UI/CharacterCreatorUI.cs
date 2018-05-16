@@ -134,8 +134,6 @@ namespace PathFinderRPG
             // TODO: Validate dropdown selections ( > -1 )
             // TODO: Validate abilities are valid ( > 0 )
 
-            //try
-            //{
             int baseStrength = int.Parse(_strength.text);
             int baseDexterity = int.Parse(_dexterity.text);
             int baseConstitution = int.Parse(_constitution.text);
@@ -160,13 +158,7 @@ namespace PathFinderRPG
 
             // TODO: Temporary
             Player player = GameObject.FindObjectOfType<Player>();
-
             player.character = character;
-            //}
-            //catch
-            //{
-            //    throw new System.InvalidCastException("Base ability failed to parse.");
-            //}
         }
 
 
@@ -217,7 +209,7 @@ namespace PathFinderRPG
         }
 
         /// <summary>
-        /// 
+        /// Updates the ability bonuses for the selected race
         /// </summary>
         private void UpdateAbilityBonuses(CharacterRace characterRace)
         {

@@ -8,10 +8,10 @@ namespace PathFinderRPG
         private int _value;
 
         /// <summary>
-        /// 
+        /// Initialises the ability bonuses
         /// </summary>
-        /// <param name="ability"></param>
-        /// <param name="value"></param>
+        /// <param name="ability">The ability</param>
+        /// <param name="value">The bonus value</param>
         private void Init(CharacterAbility ability, int value)
         {
             _ability = ability;
@@ -19,11 +19,11 @@ namespace PathFinderRPG
         }
 
         /// <summary>
-        /// 
+        /// Creates and instance of the AbilityBonus
         /// </summary>
-        /// <param name="ability"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="ability">The ability</param>
+        /// <param name="value">The bonus value</param>
+        /// <returns>AbilityBonus</returns>
         public static AbilityBonus CreateInstance(CharacterAbility ability, int value)
         {
             AbilityBonus abilityBonus = ScriptableObject.CreateInstance<AbilityBonus>();
@@ -34,7 +34,7 @@ namespace PathFinderRPG
         }
 
         /// <summary>
-        /// 
+        /// Returns the CharacterAbility of the AbilityBonus
         /// </summary>
         public CharacterAbility Ability
         {
@@ -42,7 +42,7 @@ namespace PathFinderRPG
         }
 
         /// <summary>
-        /// 
+        /// Returns the value of the AbilityBonus
         /// </summary>
         public int Value
         {
