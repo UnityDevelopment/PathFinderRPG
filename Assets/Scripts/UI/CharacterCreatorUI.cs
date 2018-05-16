@@ -134,14 +134,22 @@ namespace PathFinderRPG
             // TODO: Validate dropdown selections ( > -1 )
             // TODO: Validate abilities are valid ( > 0 )
 
-            int baseStrength = int.Parse(_strength.text);
-            int baseDexterity = int.Parse(_dexterity.text);
-            int baseConstitution = int.Parse(_constitution.text);
-            int baseIntelligence = int.Parse(_intelligence.text);
-            int baseWisdom = int.Parse(_wisdom.text);
-            int baseCharisma = int.Parse(_charisma.text);
+            int baseStrength = ParseBaseAbility(_strength.text);
+            int baseDexterity = ParseBaseAbility(_dexterity.text);
+            int baseConstitution = ParseBaseAbility(_constitution.text);
+            int baseIntelligence = ParseBaseAbility(_intelligence.text);
+            int baseWisdom = ParseBaseAbility(_wisdom.text);
+            int baseCharisma = ParseBaseAbility(_charisma.text);
             CharacterClass characterClass = (CharacterClass)(_characterClass.value + _dropdownHeadingOffset);
             CharacterRace characterRace = (CharacterRace)(_characterRace.value + _dropdownHeadingOffset);
+
+            // apply ability bonuses
+            baseStrength += ParseAbilityBonus(_strengthBonus.text);
+            baseDexterity += ParseAbilityBonus(_dexterityBonus.text);
+            baseConstitution += ParseAbilityBonus(_constitutionBonus.text);
+            baseIntelligence += ParseAbilityBonus(_intelligenceBonus.text);
+            baseWisdom += ParseAbilityBonus(_wisdomBonus.text);
+            baseCharisma += ParseAbilityBonus(_charismaBonus.text);
 
             // returns a Character class
             Character character = CharacterCreator.Create
@@ -272,6 +280,40 @@ namespace PathFinderRPG
             _intelligenceBonus.text = string.Empty;
             _wisdomBonus.text = string.Empty;
             _charismaBonus.text = string.Empty;
+        }
+
+        /// <summary>
+        /// Parses base ability
+        /// </summary>
+        /// <param name="input">The base ability</param>
+        /// <returns>int</returns>
+        private int ParseBaseAbility(string input)
+        {
+            return ParseInput(input);
+        }
+
+        /// <summary>
+        /// Parses ability bonus
+        /// </summary>
+        /// <param name="input">The ability bonus</param>
+        /// <returns>int</returns>
+        private int ParseAbilityBonus(string input)
+        {
+            return ParseInput(input);
+        }
+
+        /// <summary>
+        /// Attempts to parse string as int
+        /// </summary>
+        /// <param name="input">The string</param>
+        /// <returns>int</returns>
+        private int ParseInput(string input)
+        {
+            int result = 0;
+
+            int.TryParse(input, out result);
+
+            return result;
         }
     }
 }
