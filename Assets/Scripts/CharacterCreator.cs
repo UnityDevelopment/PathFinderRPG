@@ -17,7 +17,7 @@ namespace PathFinderRPG
         /// Rolls 4 D6, ignores the lowest value, returns the sum of the remaining dice
         /// </summary>
         /// <returns>int</returns>
-        private static int RollBaseAbility()
+        public static int RollForAbilityScore()
         {
             // TODO: remove the hard-coded "4"
             int[] results = Dice.Roll(Dice.DieType.D6, 4, Dice.SortOrder.Descending);
@@ -31,57 +31,6 @@ namespace PathFinderRPG
             }
 
             return sumOfDiceRolls;
-        }
-
-        // TODO: The following methods could be replaced with just RollBaseAbility, setting it to Public
-        //       but there may be value in separate methods depending on how the project unfolds.  Keep for now - 09/05/18
-
-        /// <summary>
-        /// Set strength ability
-        /// </summary>
-        public static int RollForBaseStrengthAbility()
-        {
-            return RollBaseAbility();
-        }
-
-        /// <summary>
-        /// Set dexterity ability
-        /// </summary>
-        public static int RollForBaseDexterityAbility()
-        {
-            return RollBaseAbility();
-        }
-
-        /// <summary>
-        /// Set constitution ability
-        /// </summary>
-        public static int RollForBaseConstitutionAbility()
-        {
-            return RollBaseAbility();
-        }
-
-        /// <summary>
-        /// Set intelligence ability
-        /// </summary>
-        public static int RollForBaseIntelligenceAbility()
-        {
-            return RollBaseAbility();
-        }
-
-        /// <summary>
-        /// Set wisdom ability
-        /// </summary>
-        public static int RollForBaseWisdomAbility()
-        {
-            return RollBaseAbility();
-        }
-
-        /// <summary>
-        /// Set charisma ability
-        /// </summary>
-        public static int RollForBaseCharismaAbility()
-        {
-            return RollBaseAbility();
         }
 
         /// <summary>
@@ -183,32 +132,50 @@ namespace PathFinderRPG
         /// <param name="intelligence">The character's base intelligence ability</param>
         /// <param name="wisdom">The character's base wisdom ability</param>
         /// <param name="charisma">The character's base charisma ability</param>
+        /// <param name="strengthModifier">The character's strength modifier</param>
+        /// <param name="dexterityModifier">The character's dexterity modifier</param>
+        /// <param name="constitutionModifier">The character's constitution modifier</param>
+        /// <param name="intelligenceModifier">The character's intelligence modifier</param>
+        /// <param name="wisdomModifier">The character's wisdom modifier</param>
+        /// <param name="charismaModifier">The character's charisma modifier</param> 
         /// <param name="characterClass">The character's class</param>
         /// <param name="characterRace">The character's race</param>
         /// <returns>Character</returns>
         public static Character Create
-            (
-                int strength,
-                int dexterity,
-                int constitution,
-                int intelligence,
-                int wisdom,
-                int charisma,
-                CharacterClass characterClass,
-                CharacterRace characterRace
-            )
+        (
+            int strength,
+            int dexterity,
+            int constitution,
+            int intelligence,
+            int wisdom,
+            int charisma,
+            int strengthModifier,
+            int dexterityModifier,
+            int constitutionModifier,
+            int intelligenceModifier,
+            int wisdomModifier,
+            int charismaModifier,
+            CharacterClass characterClass,
+            CharacterRace characterRace
+        )
         {
             Character character = Character.CreateInstance
-                (
-                    strength,
-                    dexterity,
-                    constitution,
-                    intelligence,
-                    wisdom,
-                    charisma,
-                    characterClass,
-                    characterRace
-                );
+            (
+                strength,
+                dexterity,
+                constitution,
+                intelligence,
+                wisdom,
+                charisma,
+                strengthModifier,
+                dexterityModifier,
+                constitutionModifier,
+                intelligenceModifier,
+                wisdomModifier,
+                charismaModifier,
+                characterClass,
+                characterRace
+            );
 
             return character;
         }
@@ -217,9 +184,9 @@ namespace PathFinderRPG
         /// Calculates the ability modifier for the specified base score
         /// </summary>
         /// <param name="abilityBaseScore">The ability's base score</param>
-        public static int CalculateAbilityModifier(int abilityBaseScore)
+        public static int CalculateAbilityModifier(int abilityBaseScore, int abilityBonus)
         {
-            double modifier = (abilityBaseScore - 10) / 2;
+            double modifier = ((abilityBaseScore + abilityBonus) - 10) / 2;
 
             return (int)Math.Floor(modifier);
         }

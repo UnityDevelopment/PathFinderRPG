@@ -49,11 +49,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollStrength()
         {
-            int baseScore = CharacterCreator.RollForBaseStrengthAbility();
-            int modifier = CharacterCreator.CalculateAbilityModifier(baseScore);
-
-            _strength.text = baseScore.ToString();
-            _strengthModifier.text = modifier.ToString(true);
+            UpdateAbilityScore(CharacterAbility.Strength);
+            UpdateAbilityModifier(CharacterAbility.Strength);
         }
 
         /// <summary>
@@ -61,11 +58,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollDexterity()
         {
-            int baseScore = CharacterCreator.RollForBaseDexterityAbility();
-            int abilityModifier = CharacterCreator.CalculateAbilityModifier(baseScore);
-
-            _dexterity.text = baseScore.ToString();
-            _dexterityModifier.text = abilityModifier.ToString(true);
+            UpdateAbilityScore(CharacterAbility.Dexterity);
+            UpdateAbilityModifier(CharacterAbility.Dexterity);
         }
 
         /// <summary>
@@ -73,11 +67,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollConstitution()
         {
-            int baseScore = CharacterCreator.RollForBaseConstitutionAbility();
-            int modifier = CharacterCreator.CalculateAbilityModifier(baseScore);
-
-            _constitution.text = baseScore.ToString();
-            _constitutionModifier.text = modifier.ToString(true);
+            UpdateAbilityScore(CharacterAbility.Constitution);
+            UpdateAbilityModifier(CharacterAbility.Constitution);
         }
 
         /// <summary>
@@ -85,11 +76,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollIntelligence()
         {
-            int baseScore = CharacterCreator.RollForBaseIntelligenceAbility();
-            int modifier = CharacterCreator.CalculateAbilityModifier(baseScore);
-
-            _intelligence.text = baseScore.ToString();
-            _intelligenceModifier.text = modifier.ToString(true);
+            UpdateAbilityScore(CharacterAbility.Intelligence);
+            UpdateAbilityModifier(CharacterAbility.Intelligence);
         }
 
         /// <summary>
@@ -97,11 +85,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollWisdom()
         {
-            int baseScore = CharacterCreator.RollForBaseWisdomAbility();
-            int modifier = CharacterCreator.CalculateAbilityModifier(baseScore);
-
-            _wisdom.text = baseScore.ToString();
-            _wisdomModifier.text = modifier.ToString(true);
+            UpdateAbilityScore(CharacterAbility.Wisdom);
+            UpdateAbilityModifier(CharacterAbility.Wisdom);
         }
 
         /// <summary>
@@ -109,21 +94,19 @@ namespace PathFinderRPG
         /// </summary>
         public void RollCharisma()
         {
-            int baseScore = CharacterCreator.RollForBaseCharismaAbility();
-            int modifier = CharacterCreator.CalculateAbilityModifier(baseScore);
-
-            _charisma.text = baseScore.ToString();
-            _charismaModifier.text = modifier.ToString(true);
+            UpdateAbilityScore(CharacterAbility.Charisma);
+            UpdateAbilityModifier(CharacterAbility.Charisma);
         }
-
+        
         /// <summary>
         /// Event handler for race selection
         /// </summary>
         public void SelectedRaceChanged()
         {
-            CharacterRace characterRace = (CharacterRace)_characterRace.value + _dropdownHeadingOffset;
+            CharacterRace characterRace = GetCharacterRace();
 
             UpdateAbilityBonuses(characterRace);
+            UpdateAbilityModifiers();
         }
 
         /// <summary>
@@ -134,22 +117,21 @@ namespace PathFinderRPG
             // TODO: Validate dropdown selections ( > -1 )
             // TODO: Validate abilities are valid ( > 0 )
 
-            int baseStrength = ParseBaseAbility(_strength.text);
-            int baseDexterity = ParseBaseAbility(_dexterity.text);
-            int baseConstitution = ParseBaseAbility(_constitution.text);
-            int baseIntelligence = ParseBaseAbility(_intelligence.text);
-            int baseWisdom = ParseBaseAbility(_wisdom.text);
-            int baseCharisma = ParseBaseAbility(_charisma.text);
-            CharacterClass characterClass = (CharacterClass)(_characterClass.value + _dropdownHeadingOffset);
-            CharacterRace characterRace = (CharacterRace)(_characterRace.value + _dropdownHeadingOffset);
+            int baseStrength = CalculateBaseAbility(CharacterAbility.Strength);
+            int baseDexterity = CalculateBaseAbility(CharacterAbility.Dexterity);
+            int baseConstitution = CalculateBaseAbility(CharacterAbility.Constitution);
+            int baseIntelligence = CalculateBaseAbility(CharacterAbility.Intelligence);
+            int baseWisdom = CalculateBaseAbility(CharacterAbility.Wisdom);
+            int baseCharisma = CalculateBaseAbility(CharacterAbility.Charisma);
+            int strengthModifier = ParseAbilityModifier(CharacterAbility.Strength);
+            int dexterityModifier = ParseAbilityModifier(CharacterAbility.Dexterity);
+            int constitutionModifier = ParseAbilityModifier(CharacterAbility.Constitution);
+            int intelligenceModifier = ParseAbilityModifier(CharacterAbility.Intelligence);
+            int wisdomModifier = ParseAbilityModifier(CharacterAbility.Wisdom);
+            int charismaModifier = ParseAbilityModifier(CharacterAbility.Charisma);
 
-            // apply ability bonuses
-            baseStrength += ParseAbilityBonus(_strengthBonus.text);
-            baseDexterity += ParseAbilityBonus(_dexterityBonus.text);
-            baseConstitution += ParseAbilityBonus(_constitutionBonus.text);
-            baseIntelligence += ParseAbilityBonus(_intelligenceBonus.text);
-            baseWisdom += ParseAbilityBonus(_wisdomBonus.text);
-            baseCharisma += ParseAbilityBonus(_charismaBonus.text);
+            CharacterClass characterClass = GetCharacterClass();
+            CharacterRace characterRace = GetCharacterRace();
 
             // returns a Character class
             Character character = CharacterCreator.Create
@@ -160,6 +142,12 @@ namespace PathFinderRPG
                     baseIntelligence,
                     baseWisdom,
                     baseCharisma,
+                    strengthModifier,
+                    dexterityModifier,
+                    constitutionModifier,
+                    intelligenceModifier,
+                    wisdomModifier,
+                    charismaModifier,
                     characterClass,
                     characterRace
                 );
@@ -178,6 +166,7 @@ namespace PathFinderRPG
             PopulateCharacterClasses();
             PopulateCharacterRaces();
         }
+
 
         /// <summary>
         /// Populate the Character Classes dropdown
@@ -216,6 +205,20 @@ namespace PathFinderRPG
             dropdown.AddOptions(optionItems);
         }
 
+
+        /// <summary>
+        /// Recalculates and updates the ability score for the specified character ability
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        private void UpdateAbilityScore(CharacterAbility characterAbility)
+        {
+            Text ability = GetAbilityGameObject(characterAbility);
+            
+            int abilityScore = CharacterCreator.RollForAbilityScore();
+
+            ability.text = abilityScore.ToString();
+        }
+
         /// <summary>
         /// Updates the ability bonuses for the selected race
         /// </summary>
@@ -227,79 +230,266 @@ namespace PathFinderRPG
 
             foreach (AbilityBonus abilityBonus in abilityBonuses)
             {
-                // TODO: Refactor, helper method to return corresponding UI Text GameObject
-                switch (abilityBonus.Ability)
-                {
-                    case CharacterAbility.Strength:
-
-                        _strengthBonus.text = abilityBonus.Value.ToString(true);
-
-                        break;
-
-                    case CharacterAbility.Dexterity:
-
-                        _dexterityBonus.text = abilityBonus.Value.ToString(true);
-
-                        break;
-
-                    case CharacterAbility.Constitution:
-
-                        _constitutionBonus.text = abilityBonus.Value.ToString(true);
-
-                        break;
-
-                    case CharacterAbility.Intelligence:
-
-                        _intelligenceBonus.text = abilityBonus.Value.ToString(true);
-
-                        break;
-
-                    case CharacterAbility.Wisdom:
-
-                        _wisdomBonus.text = abilityBonus.Value.ToString(true);
-
-                        break;
-
-                    case CharacterAbility.Charisma:
-
-                        _charismaBonus.text = abilityBonus.Value.ToString(true);
-
-                        break;
-                }
+                UpdateAbilityBonus(abilityBonus.Ability, abilityBonus.Value);
             }
         }
+
+        /// <summary>
+        /// Updates the ability bonus for the specified character ability
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        /// <param name="bonus">The ability bonus</param>
+        private void UpdateAbilityBonus(CharacterAbility characterAbility, int bonus)
+        {
+            Text abilityBonus = GetAbilityBonusGameObject(characterAbility);
+
+            abilityBonus.text = bonus.ToString(true);
+        }
+
+        /// <summary>
+        /// Recalculates and updates all ability modifiers
+        /// </summary>
+        private void UpdateAbilityModifiers()
+        {
+            UpdateAbilityModifier(CharacterAbility.Strength);
+            UpdateAbilityModifier(CharacterAbility.Dexterity);
+            UpdateAbilityModifier(CharacterAbility.Constitution);
+            UpdateAbilityModifier(CharacterAbility.Intelligence);
+            UpdateAbilityModifier(CharacterAbility.Wisdom);
+            UpdateAbilityModifier(CharacterAbility.Charisma);
+        }
+
+        /// <summary>
+        /// Recalculates and updates the ability's modifier for the specified character ability
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        private void UpdateAbilityModifier(CharacterAbility characterAbility)
+        {
+            Text ability = GetAbilityGameObject(characterAbility);
+            Text abilityBonus = GetAbilityBonusGameObject(characterAbility);
+            Text abilityModifier = GetAbilityModifierGameObject(characterAbility);
+
+            int score = ParseAbilityScore(characterAbility);
+            int bonus = ParseAbilityBonus(characterAbility);
+            int modifier = CharacterCreator.CalculateAbilityModifier(score, bonus);
+
+            abilityModifier.text = modifier.ToString(true);
+        }
+
 
         /// <summary>
         /// Clears the currently display ability bonuses
         /// </summary>
         private void ClearAbilityBonuses()
         {
-            _strengthBonus.text = string.Empty;
-            _dexterityBonus.text = string.Empty;
-            _constitutionBonus.text = string.Empty;
-            _intelligenceBonus.text = string.Empty;
-            _wisdomBonus.text = string.Empty;
-            _charismaBonus.text = string.Empty;
+            ClearAbilityBonus(CharacterAbility.Strength);
+            ClearAbilityBonus(CharacterAbility.Dexterity);
+            ClearAbilityBonus(CharacterAbility.Constitution);
+            ClearAbilityBonus(CharacterAbility.Intelligence);
+            ClearAbilityBonus(CharacterAbility.Wisdom);
+            ClearAbilityBonus(CharacterAbility.Charisma);
         }
 
         /// <summary>
-        /// Parses base ability
+        /// Clears the ability's Text GameObject for the specified character ability
         /// </summary>
-        /// <param name="input">The base ability</param>
-        /// <returns>int</returns>
-        private int ParseBaseAbility(string input)
+        /// <param name="characterAbility">The character ability</param>
+        private void ClearAbilityBonus(CharacterAbility characterAbility)
         {
-            return ParseInput(input);
+            Text abilityBonus = GetAbilityBonusGameObject(characterAbility);
+
+            abilityBonus.text = String.Empty;
+        }
+
+
+        /// <summary>
+        /// Returns the ability's Text GameObject for the specified character ability
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        /// <returns>Text</returns>
+        private Text GetAbilityGameObject(CharacterAbility characterAbility)
+        {
+            Text ability = null;
+
+            switch (characterAbility)
+            {
+                case CharacterAbility.Strength:
+
+                    ability = _strength;
+
+                    break;
+
+                case CharacterAbility.Dexterity:
+
+                    ability = _dexterity;
+
+                    break;
+
+                case CharacterAbility.Constitution:
+
+                    ability = _constitution;
+
+                    break;
+
+                case CharacterAbility.Intelligence:
+
+                    ability = _intelligence;
+
+                    break;
+
+                case CharacterAbility.Wisdom:
+
+                    ability = _wisdom;
+
+                    break;
+
+                case CharacterAbility.Charisma:
+
+                    ability = _charisma;
+
+                    break;
+            }
+
+            return ability;
+        }
+
+        /// <summary>
+        /// Returns the ability's bonus Text GameObject for the specified character ability
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        /// <returns>Text</returns>
+        private Text GetAbilityBonusGameObject(CharacterAbility characterAbility)
+        {
+            Text abilityBonus = null;
+
+            switch (characterAbility)
+            {
+                case CharacterAbility.Strength:
+
+                    abilityBonus = _strengthBonus;
+
+                    break;
+
+                case CharacterAbility.Dexterity:
+
+                    abilityBonus = _dexterityBonus;
+
+                    break;
+
+                case CharacterAbility.Constitution:
+
+                    abilityBonus = _constitutionBonus;
+
+                    break;
+
+                case CharacterAbility.Intelligence:
+
+                    abilityBonus = _intelligenceBonus;
+
+                    break;
+
+                case CharacterAbility.Wisdom:
+
+                    abilityBonus = _wisdomBonus;
+
+                    break;
+
+                case CharacterAbility.Charisma:
+
+                    abilityBonus = _charismaBonus;
+
+                    break;
+            }
+
+            return abilityBonus;
+        }
+
+        /// <summary>
+        /// Returns the ability's modifier Text GameObject for the specified character ability
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        /// <returns>Text</returns>
+        private Text GetAbilityModifierGameObject(CharacterAbility characterAbility)
+        {
+            Text abilityModifier = null;
+
+            switch (characterAbility)
+            {
+                case CharacterAbility.Strength:
+
+                    abilityModifier = _strengthModifier;
+
+                    break;
+
+                case CharacterAbility.Dexterity:
+
+                    abilityModifier = _dexterityModifier;
+
+                    break;
+
+                case CharacterAbility.Constitution:
+
+                    abilityModifier = _constitutionModifier;
+
+                    break;
+
+                case CharacterAbility.Intelligence:
+
+                    abilityModifier = _intelligenceModifier;
+
+                    break;
+
+                case CharacterAbility.Wisdom:
+
+                    abilityModifier = _wisdomModifier;
+
+                    break;
+
+                case CharacterAbility.Charisma:
+
+                    abilityModifier = _charismaModifier;
+
+                    break;
+            }
+
+            return abilityModifier;
+        }
+
+
+        /// <summary>
+        /// Parses ability score
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        /// <returns>int</returns>
+        private int ParseAbilityScore(CharacterAbility characterAbility)
+        {
+            Text ability = GetAbilityGameObject(characterAbility);
+
+            return ParseInput(ability.text);
         }
 
         /// <summary>
         /// Parses ability bonus
         /// </summary>
-        /// <param name="input">The ability bonus</param>
+        /// <param name="characterAbility">The character ability</param>
         /// <returns>int</returns>
-        private int ParseAbilityBonus(string input)
+        private int ParseAbilityBonus(CharacterAbility characterAbility)
         {
-            return ParseInput(input);
+            Text abilityBonus = GetAbilityBonusGameObject(characterAbility);
+
+            return ParseInput(abilityBonus.text);
+        }
+
+        /// <summary>
+        /// Parses ability modifier
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        /// <returns>int</returns>
+        private int ParseAbilityModifier(CharacterAbility characterAbility)
+        {
+            Text abilityModifier = GetAbilityModifierGameObject(characterAbility);
+
+            return ParseInput(abilityModifier.text);
         }
 
         /// <summary>
@@ -314,6 +504,38 @@ namespace PathFinderRPG
             int.TryParse(input, out result);
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns the sum of the character's ability score and ability bonus
+        /// </summary>
+        /// <param name="characterAbility">The character ability</param>
+        /// <returns>int</returns>
+        private int CalculateBaseAbility(CharacterAbility characterAbility)
+        {
+            int baseAbility;
+
+            baseAbility = ParseAbilityScore(characterAbility) + ParseAbilityBonus(characterAbility);
+
+            return baseAbility;
+        }
+
+        /// <summary>
+        /// Returns the selected character race
+        /// </summary>
+        /// <returns>CharacterRace</returns>
+        private CharacterRace GetCharacterRace()
+        {
+            return (CharacterRace)_characterRace.value + _dropdownHeadingOffset;
+        }
+
+        /// <summary>
+        /// Returns the selected character class
+        /// </summary>
+        /// <returns>CharacterClass</returns>
+        private CharacterClass GetCharacterClass()
+        {
+            return (CharacterClass)_characterClass.value + _dropdownHeadingOffset;
         }
     }
 }

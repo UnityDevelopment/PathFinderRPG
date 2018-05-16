@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PathFinderRPG
 {
@@ -21,6 +20,13 @@ namespace PathFinderRPG
         private int _modifiedWisdom;
         private int _modifiedCharisma;
 
+        private int _strengthModifier;
+        private int _dexterityModifier;
+        private int _constitutionModifier;
+        private int _intelligenceModifier;
+        private int _wisdomModifier;
+        private int _charismaModifier;
+
         private CharacterClass _characterClass;
         private CharacterRace _characterRace;
 
@@ -29,32 +35,43 @@ namespace PathFinderRPG
         private int _level;
         private int _experience;
 
-        // miscellaneous (for now)
         private Dice.DieType _hitDie;
 
 
         /// <summary>
         /// Initialises the character
         /// </summary>
-        /// <param name="strength">The character's base strength ability</param>
-        /// <param name="dexterity">The character's base dexterity ability</param>
-        /// <param name="constitution">The character's base constitution ability</param>
-        /// <param name="intelligence">The character's base intelligence ability</param>
-        /// <param name="wisdom">The character's base wisdom ability</param>
-        /// <param name="charisma">The character's base charisma ability</param>
+        /// <param name="strength">The character's strength ability's base score</param>
+        /// <param name="dexterity">The character's dexterity ability's base score</param>
+        /// <param name="constitution">The character's constitution ability's base score</param>
+        /// <param name="intelligence">The character's intelligence ability's base score</param>
+        /// <param name="wisdom">The character's wisdom ability's base score</param>
+        /// <param name="charisma">The character's charisma ability's base score</param>
+        /// <param name="strengthModifier">The character's strength modifier</param>
+        /// <param name="dexterityModifier">The character's dexterity modifier</param>
+        /// <param name="constitutionModifier">The character's constitution modifier</param>
+        /// <param name="intelligenceModifier">The character's intelligence modifier</param>
+        /// <param name="wisdomModifier">The character's wisdom modifier</param>
+        /// <param name="charismaModifier">The character's charisma modifier</param>
         /// <param name="characterClass">The character's class</param>
         /// <param name="characterRace">The character's race</param>
-        private void Init 
-            (
-                int strength,
-                int dexterity,
-                int constitution,
-                int intelligence,
-                int wisdom,
-                int charisma,
-                CharacterClass characterClass,
-                CharacterRace characterRace
-            )
+        private void Init
+        (
+            int strength,
+            int dexterity,
+            int constitution,
+            int intelligence,
+            int wisdom,
+            int charisma,
+            int strengthModifier,
+            int dexterityModifier,
+            int constitutionModifier,
+            int intelligenceModifier,
+            int wisdomModifier,
+            int charismaModifier,
+            CharacterClass characterClass,
+            CharacterRace characterRace
+        )
         {
             _baseStrength = strength;
             _baseDexterity = dexterity;
@@ -70,29 +87,20 @@ namespace PathFinderRPG
             _modifiedWisdom = _baseWisdom;
             _modifiedCharisma = _baseCharisma;
 
+            _strengthModifier = strengthModifier;
+            _dexterityModifier = dexterityModifier;
+            _constitutionModifier = constitutionModifier;
+            _intelligenceModifier = intelligenceModifier;
+            _wisdomModifier = wisdomModifier;
+            _charismaModifier = charismaModifier;
+
             _characterClass = characterClass;
             _characterRace = characterRace;
 
-            // NOTE: Assumption made that character generation is for "new" characters
-            //       Not yet being displayed on UI
             _level = 1;
-            _experience = 0;        
+            _experience = 0;
 
-            // TODO: Move away from enums to specific classes (C#) for class and race
-            // SetRaceSpecificAttributes();
             SetClassSpecificAttributes();
-        }
-
-        /// <summary>
-        /// Sets character attributes specific to its race
-        /// </summary>
-        private void SetRaceSpecificAttributes()
-        {
-            // TODO: Consider - race based ability modifiers will need to be displayed to the player
-            //                  several of these allow the player to _choose_ which attribute(s) to increase
-
-            // TODO: Implement
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -265,20 +273,32 @@ namespace PathFinderRPG
         /// <param name="intelligence">The character's base intelligence ability</param>
         /// <param name="wisdom">The character's base wisdom ability</param>
         /// <param name="charisma">The character's base charisma ability</param>
+        /// <param name="strengthModifier">The character's strength modifier</param>
+        /// <param name="dexterityModifier">The character's dexterity modifier</param>
+        /// <param name="constitutionModifier">The character's constitution modifier</param>
+        /// <param name="intelligenceModifier">The character's intelligence modifier</param>
+        /// <param name="wisdomModifier">The character's wisdom modifier</param>
+        /// <param name="charismaModifier">The character's charisma modifier</param>
         /// <param name="characterClass">The character's class</param>
         /// <param name="characterRace">The character's race</param>
         /// <returns>Character</returns>
         public static Character CreateInstance
-            (
-                int strength,
-                int dexterity,
-                int constitution,
-                int intelligence,
-                int wisdom,
-                int charisma,
-                CharacterClass characterClass,
-                CharacterRace characterRace
-            )
+        (
+            int strength,
+            int dexterity,
+            int constitution,
+            int intelligence,
+            int wisdom,
+            int charisma,
+            int strengthModifier,
+            int dexterityModifier,
+            int constitutionModifier,
+            int intelligenceModifier,
+            int wisdomModifier,
+            int charismaModifier,
+            CharacterClass characterClass,
+            CharacterRace characterRace
+        )
         {
             Character character = ScriptableObject.CreateInstance<Character>();
 
@@ -290,6 +310,12 @@ namespace PathFinderRPG
                     intelligence,
                     wisdom,
                     charisma,
+                    strengthModifier,
+                    dexterityModifier,
+                    constitutionModifier,
+                    intelligenceModifier,
+                    wisdomModifier,
+                    charismaModifier,
                     characterClass,
                     characterRace
                 );
