@@ -153,8 +153,12 @@ namespace PathFinderRPG
         /// <param name="intelligenceModifier">The character's intelligence modifier</param>
         /// <param name="wisdomModifier">The character's wisdom modifier</param>
         /// <param name="charismaModifier">The character's charisma modifier</param> 
-        /// <param name="characterClass">The character's class</param>
         /// <param name="characterRace">The character's race</param>
+        /// <param name="characterClass">The character's class</param>
+        /// <param name="level">The character's level</param>
+        /// <param name="experience">The character's experience</param>
+        /// <param name="hitDie">The character's hit die</param>
+        /// <param name="health">The character's base health</param>
         /// <returns>Character</returns>
         public static Character Create
         (
@@ -170,8 +174,12 @@ namespace PathFinderRPG
             int intelligenceModifier,
             int wisdomModifier,
             int charismaModifier,
+            CharacterRace characterRace,
             CharacterClass characterClass,
-            CharacterRace characterRace
+            int level,
+            int experience,
+            Dice.DieType hitDie,
+            int health
         )
         {
             Character character = Character.CreateInstance
@@ -188,8 +196,12 @@ namespace PathFinderRPG
                 intelligenceModifier,
                 wisdomModifier,
                 charismaModifier,
+                characterRace,
                 characterClass,
-                characterRace
+                level,
+                experience,
+                hitDie,
+                health
             );
 
             return character;
@@ -205,5 +217,94 @@ namespace PathFinderRPG
 
             return (int)Math.Floor(modifier);
         }
+
+
+        /// <summary>
+        /// Returns the hit die for for the specified character class
+        /// </summary>
+        public static Dice.DieType GetHitDie(CharacterClass characterClass)
+        {
+            Dice.DieType hitDie = Dice.DieType.D4;
+
+            switch (characterClass)
+            {
+                case CharacterClass.Barbarian:
+
+                    hitDie = Dice.DieType.D12;
+
+                    break;
+
+                case CharacterClass.Bard:
+
+                    hitDie = Dice.DieType.D8;
+
+                    break;
+
+                case CharacterClass.Cleric:
+
+                    hitDie = Dice.DieType.D8;
+
+                    break;
+
+                case CharacterClass.Druid:
+
+                    hitDie = Dice.DieType.D8;
+
+                    break;
+
+                case CharacterClass.Fighter:
+
+                    hitDie = Dice.DieType.D10;
+
+                    break;
+
+                case CharacterClass.Monk:
+
+                    hitDie = Dice.DieType.D8;
+
+                    break;
+
+                case CharacterClass.Paladin:
+
+                    hitDie = Dice.DieType.D10;
+
+                    break;
+
+                case CharacterClass.Ranger:
+
+                    hitDie = Dice.DieType.D10;
+
+                    break;
+
+                case CharacterClass.Rogue:
+
+                    hitDie = Dice.DieType.D8;
+
+                    break;
+
+                case CharacterClass.Sorcerer:
+
+                    hitDie = Dice.DieType.D6;
+
+                    break;
+
+                case CharacterClass.Wizard:
+
+                    hitDie = Dice.DieType.D6;
+
+                    break;
+            }
+
+            return hitDie;
+        }
+
+        /// <summary>
+        /// Returns the health for a character based on its hit die
+        /// </summary>
+        public static int GetHealth(Dice.DieType hitDie)
+        {
+            return (int)hitDie;
+        }
+
     }
 }

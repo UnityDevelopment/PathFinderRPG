@@ -27,8 +27,8 @@ namespace PathFinderRPG
         private int _wisdomModifier;
         private int _charismaModifier;
 
-        private CharacterClass _characterClass;
         private CharacterRace _characterRace;
+        private CharacterClass _characterClass;
 
         private int _health;
 
@@ -53,8 +53,12 @@ namespace PathFinderRPG
         /// <param name="intelligenceModifier">The character's intelligence modifier</param>
         /// <param name="wisdomModifier">The character's wisdom modifier</param>
         /// <param name="charismaModifier">The character's charisma modifier</param>
-        /// <param name="characterClass">The character's class</param>
         /// <param name="characterRace">The character's race</param>
+        /// <param name="characterClass">The character's class</param>
+        /// <param name="level">The character's level</param>
+        /// <param name="experience">The character's experience</param>
+        /// <param name="hitDie">The character's hit die</param>
+        /// <param name="health">The character's base health</param>
         private void Init
         (
             int strength,
@@ -69,8 +73,12 @@ namespace PathFinderRPG
             int intelligenceModifier,
             int wisdomModifier,
             int charismaModifier,
+            CharacterRace characterRace,
             CharacterClass characterClass,
-            CharacterRace characterRace
+            int level,
+            int experience,
+            Dice.DieType hitDie,
+            int health
         )
         {
             _baseStrength = strength;
@@ -79,6 +87,8 @@ namespace PathFinderRPG
             _baseIntelligence = intelligence;
             _baseWisdom = wisdom;
             _baseCharisma = charisma;
+
+            _baseHealth = health;
 
             _modifiedStrength = _baseStrength;
             _modifiedDexterity = _baseDexterity;
@@ -94,174 +104,14 @@ namespace PathFinderRPG
             _wisdomModifier = wisdomModifier;
             _charismaModifier = charismaModifier;
 
-            _characterClass = characterClass;
             _characterRace = characterRace;
+            _characterClass = characterClass;
 
-            _level = 1;
-            _experience = 0;
+            _level = level;
+            _experience = experience;
 
-            SetClassSpecificAttributes();
-        }
-
-        /// <summary>
-        /// Sets additional character attributes specific to its class
-        /// </summary>
-        private void SetClassSpecificAttributes()
-        {
-            SetHitDie();
-            SetHealth();
-        }
-
-        /// <summary>
-        /// Sets the character's hit die based on its class
-        /// </summary>
-        private void SetHitDie()
-        {
-            switch (_characterClass)
-            {
-                case CharacterClass.Barbarian:
-
-                    _hitDie = Dice.DieType.D12;
-
-                    break;
-
-                case CharacterClass.Bard:
-
-                    _hitDie = Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Cleric:
-
-                    _hitDie = Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Druid:
-
-                    _hitDie = Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Fighter:
-
-                    _hitDie = Dice.DieType.D10;
-
-                    break;
-
-                case CharacterClass.Monk:
-
-                    _hitDie = Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Paladin:
-
-                    _hitDie = Dice.DieType.D10;
-
-                    break;
-
-                case CharacterClass.Ranger:
-
-                    _hitDie = Dice.DieType.D10;
-
-                    break;
-
-                case CharacterClass.Rogue:
-
-                    _hitDie = Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Sorcerer:
-
-                    _hitDie = Dice.DieType.D6;
-
-                    break;
-
-                case CharacterClass.Wizard:
-
-                    _hitDie = Dice.DieType.D6;
-
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Sets the character's health based on its hit die
-        /// </summary>
-        private void SetHealth()
-        {
-            switch (_characterClass)
-            {
-                case CharacterClass.Barbarian:
-
-                    _baseHealth = (int)Dice.DieType.D12;
-
-                    break;
-
-                case CharacterClass.Bard:
-
-                    _baseHealth = (int)Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Cleric:
-
-                    _baseHealth = (int)Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Druid:
-
-                    _baseHealth = (int)Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Fighter:
-
-                    _baseHealth = (int)Dice.DieType.D10;
-
-                    break;
-
-                case CharacterClass.Monk:
-
-                    _baseHealth = (int)Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Paladin:
-
-                    _baseHealth = (int)Dice.DieType.D10;
-
-                    break;
-
-                case CharacterClass.Ranger:
-
-                    _baseHealth = (int)Dice.DieType.D10;
-
-                    break;
-
-                case CharacterClass.Rogue:
-
-                    _baseHealth = (int)Dice.DieType.D8;
-
-                    break;
-
-                case CharacterClass.Sorcerer:
-
-                    _baseHealth = (int)Dice.DieType.D6;
-
-                    break;
-
-                case CharacterClass.Wizard:
-
-                    _baseHealth = (int)Dice.DieType.D6;
-
-                    break;
-            }
-
-            _health = _baseHealth;
+            _hitDie = hitDie;
+            _health = health;
         }
 
         /// <summary>
@@ -279,8 +129,12 @@ namespace PathFinderRPG
         /// <param name="intelligenceModifier">The character's intelligence modifier</param>
         /// <param name="wisdomModifier">The character's wisdom modifier</param>
         /// <param name="charismaModifier">The character's charisma modifier</param>
-        /// <param name="characterClass">The character's class</param>
         /// <param name="characterRace">The character's race</param>
+        /// <param name="characterClass">The character's class</param>
+        /// <param name="level">The character's level</param>
+        /// <param name="experience">The character's experience</param>
+        /// <param name="hitDie">The character's hit die</param>
+        /// <param name="health">The character's base health</param>
         /// <returns>Character</returns>
         public static Character CreateInstance
         (
@@ -296,8 +150,12 @@ namespace PathFinderRPG
             int intelligenceModifier,
             int wisdomModifier,
             int charismaModifier,
+            CharacterRace characterRace,
             CharacterClass characterClass,
-            CharacterRace characterRace
+            int level,
+            int experience,
+            Dice.DieType hitDie,
+            int health
         )
         {
             Character character = ScriptableObject.CreateInstance<Character>();
@@ -316,8 +174,12 @@ namespace PathFinderRPG
                     intelligenceModifier,
                     wisdomModifier,
                     charismaModifier,
+                    characterRace,
                     characterClass,
-                    characterRace
+                    level,
+                    experience,
+                    hitDie,
+                    health
                 );
 
             return character;

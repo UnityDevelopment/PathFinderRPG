@@ -25,7 +25,7 @@ namespace PathFinderRPG
         public Text _wisdomBonus;
         public Text _charismaBonus;
 
-        [SpaceAttribute(10f)]
+        [Space(10f)]
 
         public Dropdown _abilities;
 
@@ -42,6 +42,15 @@ namespace PathFinderRPG
 
         [Header("Class")]
         public Dropdown _characterClass;
+
+        [Space(10f)]
+
+        public Text _level;
+        public Text _experience;
+        public Text _health;
+
+
+        private Dice.DieType _hitDie;
 
 
         // dropdown heading index offset
@@ -130,6 +139,21 @@ namespace PathFinderRPG
         }
 
         /// <summary>
+        /// Event handler for class selection
+        /// </summary>
+        public void SelectedClassChanged()
+        {
+            CharacterClass characterClass = GetCharacterClass();
+
+            if (SelectedOptionIsValid(typeof(CharacterClass), characterClass))
+            {
+                SetClassSpecificAttributes(characterClass);
+            }
+
+            PopulateLevel1Attributes();
+        }
+
+        /// <summary>
         /// Event handler for ability selection
         /// </summary>
         public void SelectedAbilityChanged()
@@ -172,8 +196,13 @@ namespace PathFinderRPG
             int wisdomModifier = ParseAbilityModifier(CharacterAbility.Wisdom);
             int charismaModifier = ParseAbilityModifier(CharacterAbility.Charisma);
 
-            CharacterClass characterClass = GetCharacterClass();
             CharacterRace characterRace = GetCharacterRace();
+            CharacterClass characterClass = GetCharacterClass();
+
+            // TODO: Refactor
+            int level = ParseInput(_level.text);
+            int experience = ParseInput(_experience.text);
+            int health = ParseInput(_health.text);
 
             // returns a Character class
             Character character = CharacterCreator.Create
@@ -190,8 +219,12 @@ namespace PathFinderRPG
                     intelligenceModifier,
                     wisdomModifier,
                     charismaModifier,
+                    characterRace,
                     characterClass,
-                    characterRace
+                    level,
+                    experience,
+                    _hitDie,    // TODO: Code smell
+                    health
                 );
 
             // TODO: Temporary
@@ -205,21 +238,11 @@ namespace PathFinderRPG
         /// </summary>
         private void Start()
         {
-            PopulateCharacterClasses();
             PopulateCharacterRaces();
+            PopulateCharacterClasses();
             PopulateCharacterAbilities();
         }
 
-
-        /// <summary>
-        /// Populate the Character Classes dropdown
-        /// </summary>
-        private void PopulateCharacterClasses()
-        {
-            string[] characterClasses = Enum.GetNames(typeof(CharacterClass));
-
-            PopulateDropdown(_characterClass, "Class", characterClasses);
-        }
 
         /// <summary>
         /// Populate the Character Races dropdown
@@ -229,6 +252,16 @@ namespace PathFinderRPG
             string[] characterRaces = Enum.GetNames(typeof(CharacterRace));
 
             PopulateDropdown(_characterRace, "Race", characterRaces);
+        }
+
+        /// <summary>
+        /// Populate the Character Classes dropdown
+        /// </summary>
+        private void PopulateCharacterClasses()
+        {
+            string[] characterClasses = Enum.GetNames(typeof(CharacterClass));
+
+            PopulateDropdown(_characterClass, "Class", characterClasses);
         }
 
         /// <summary>
@@ -362,8 +395,6 @@ namespace PathFinderRPG
         /// <param name="characterAbility">The character ability</param>
         private void UpdateAbilityModifier(CharacterAbility characterAbility)
         {
-            Text ability = GetAbilityGameObject(characterAbility);
-            Text abilityBonus = GetAbilityBonusGameObject(characterAbility);
             Text abilityModifier = GetAbilityModifierGameObject(characterAbility);
 
             int score = ParseAbilityScore(characterAbility);
@@ -642,6 +673,30 @@ namespace PathFinderRPG
         private CharacterAbility GetCharacterAbility()
         {
             return (CharacterAbility)_abilities.value + _dropdownHeadingOffset;
+        }
+
+        /// <summary>
+        /// Sets class specific attributes
+        /// </summary>
+        /// <param name="characterClass">The character class</param>
+        private void SetClassSpecificAttributes(CharacterClass characterClass)
+        {
+            _hitDie = CharacterCreator.GetHitDie(characterClass);
+
+            // UpdateAttribute method call?
+            _health.text = CharacterCreator.GetHealth(_hitDie).ToString();
+
+            // TODO: Apply modifiers
+        }
+
+        /// <summary>
+        /// Populate level 1 character attributes
+        /// </summary>
+        private void PopulateLevel1Attributes()
+        {
+            // NOTE: Potentially temporary as level may become selectable
+            _level.text = 1.ToString();
+            _experience.text = 0.ToString();
         }
     }
 }
