@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 // TODO: Move these to a more suitable location, potentially their own namespace
 
-public enum CharacterAbility : int { Strength, Dexterity, Intelligence, Constitution, Wisdom, Charisma};
+public enum CharacterAbility : int { Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma};
 
 public enum CharacterRace : int { Dwarf, Elf, Gnome, Half_Elf, Half_Orc, Halfling, Human };
 public enum CharacterClass : int { Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Wizard };
@@ -19,12 +19,12 @@ namespace PathFinderRPG
         /// <returns>int</returns>
         public static int RollForAbilityScore()
         {
-            // TODO: remove the hard-coded "4"
+            // TODO: Remove hard coded value
             int[] results = Dice.Roll(Dice.DieType.D6, 4, Dice.SortOrder.Descending);
 
             int sumOfDiceRolls = 0;
 
-            // TODO: remove the hard-coded "3"
+            // TODO: Remove hard coded value
             for (int i = 0; i < 3; i++)
             {
                 sumOfDiceRolls += results[i];
@@ -83,7 +83,6 @@ namespace PathFinderRPG
                     abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Charisma, 2);
                     abilityBonuses.Add(abilityBonus);
 
-
                     break;
 
                 case CharacterRace.Halfling:
@@ -97,27 +96,43 @@ namespace PathFinderRPG
                     abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Charisma, 2);
                     abilityBonuses.Add(abilityBonus);
 
-
                     break;
 
                 case CharacterRace.Half_Elf:
 
-                    // TODO: Player can select a +2 for any one ability
+                    // Note: Intentionally left empty, player can choose ability
 
                     break;
 
                 case CharacterRace.Half_Orc:
 
-                    // TODO: Player can select a +2 for any one ability
+                    // Note: Intentionally left empty, player can choose ability
 
                     break;
 
                 case CharacterRace.Human:
 
-                    // TODO: Player can select a +2 for any one ability
+                    // Note: Intentionally left empty, player can choose ability
 
                     break;
             }
+
+            return abilityBonuses;
+        }
+
+        /// <summary>
+        /// Returns a list of ability bonuses for the specified character ability
+        /// </summary>
+        /// <param name="characterAbility">The CharacterAbility</param>
+        /// <returns>List</returns>
+        public static List<AbilityBonus> GetAbilityBonuses(CharacterAbility characterAbility)
+        {
+            List<AbilityBonus> abilityBonuses = new List<AbilityBonus>();
+            AbilityBonus abilityBonus;
+
+            // TODO: Remove hard coded value
+            abilityBonus = AbilityBonus.CreateInstance(characterAbility, 2);
+            abilityBonuses.Add(abilityBonus);
 
             return abilityBonuses;
         }

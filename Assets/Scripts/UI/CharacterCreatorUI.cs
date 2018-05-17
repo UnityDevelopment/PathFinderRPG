@@ -25,6 +25,10 @@ namespace PathFinderRPG
         public Text _wisdomBonus;
         public Text _charismaBonus;
 
+        [SpaceAttribute(10f)]
+
+        public Dropdown _abilities;
+
         [Header("Ability Modifiers")]
         public Text _strengthModifier;
         public Text _dexterityModifier;
@@ -105,9 +109,47 @@ namespace PathFinderRPG
         {
             CharacterRace characterRace = GetCharacterRace();
 
-            UpdateAbilityBonuses(characterRace);
-            UpdateAbilityModifiers();
+            if (SelectedOptionIsValid(typeof(CharacterRace), characterRace))
+            {
+                // TODO: Refactor this with enum -> class changes
+                if (characterRace == CharacterRace.Half_Elf || characterRace == CharacterRace.Half_Orc || characterRace == CharacterRace.Human)
+                {
+                    ClearAbilityBonuses();
+
+                    EnableRacialBonusSelection();
+                }
+                else
+                {
+                    DisableRacialBonusSelection();
+
+                    UpdateAbilityBonuses(characterRace);
+                }
+
+                UpdateAbilityModifiers();
+            }
         }
+
+        /// <summary>
+        /// Event handler for ability selection
+        /// </summary>
+        public void SelectedAbilityChanged()
+        {
+            if (_abilities.isActiveAndEnabled)
+            {
+                CharacterAbility characterAbility = GetCharacterAbility();
+
+                if (SelectedOptionIsValid(typeof(CharacterAbility), characterAbility))
+                {
+                    UpdateAbilityBonuses(characterAbility);
+                    UpdateAbilityModifiers();
+                }
+                else
+                {
+                    ClearAbilityBonuses();
+                }
+            }
+        }
+
 
         /// <summary>
         /// Event handler for character creation
@@ -165,6 +207,7 @@ namespace PathFinderRPG
         {
             PopulateCharacterClasses();
             PopulateCharacterRaces();
+            PopulateCharacterAbilities();
         }
 
 
@@ -183,9 +226,19 @@ namespace PathFinderRPG
         /// </summary>
         private void PopulateCharacterRaces()
         {
-            string[] charaterRaces = Enum.GetNames(typeof(CharacterRace));
+            string[] characterRaces = Enum.GetNames(typeof(CharacterRace));
 
-            PopulateDropdown(_characterRace, "Race", charaterRaces);
+            PopulateDropdown(_characterRace, "Race", characterRaces);
+        }
+
+        /// <summary>
+        /// Populate the Character Abilities dropdown
+        /// </summary>
+        private void PopulateCharacterAbilities()
+        {
+            string[] characterAbilities = Enum.GetNames(typeof(CharacterAbility));
+
+            PopulateDropdown(_abilities, "Ability", characterAbilities);
         }
 
         /// <summary>
@@ -203,6 +256,35 @@ namespace PathFinderRPG
             optionItems.Insert(0, headingOption);
 
             dropdown.AddOptions(optionItems);
+        }
+
+        /// <summary>
+        /// Enables the racial bonus abilities dropdown
+        /// </summary>
+        private void EnableRacialBonusSelection()
+        {
+            _abilities.value = 0;
+            _abilities.gameObject.SetActive(true);
+        }
+
+        /// <summary>
+        /// Disables the racial bonus abilities dropdown
+        /// </summary>
+        private void DisableRacialBonusSelection()
+        {
+            _abilities.gameObject.SetActive(false);
+            _abilities.value = 0;
+        }
+
+        /// <summary>
+        /// Indicates whether a selected option is valid
+        /// </summary>
+        /// <param name="enumType">The enum type</param>
+        /// <param name="option">The selected option</param>
+        /// <returns>bool</returns>
+        private bool SelectedOptionIsValid(Type enumType, object option)
+        {
+            return Enum.IsDefined(enumType, option);
         }
 
 
@@ -227,6 +309,21 @@ namespace PathFinderRPG
             ClearAbilityBonuses();
 
             List<AbilityBonus> abilityBonuses = CharacterCreator.GetAbilityBonuses(characterRace);
+
+            foreach (AbilityBonus abilityBonus in abilityBonuses)
+            {
+                UpdateAbilityBonus(abilityBonus.Ability, abilityBonus.Value);
+            }
+        }
+
+        /// <summary>
+        /// Updates the ability bonus for the selected ability
+        /// </summary>
+        private void UpdateAbilityBonuses(CharacterAbility characterAbility)
+        {
+            ClearAbilityBonuses();
+
+            List<AbilityBonus> abilityBonuses = CharacterCreator.GetAbilityBonuses(characterAbility);
 
             foreach (AbilityBonus abilityBonus in abilityBonuses)
             {
@@ -536,6 +633,15 @@ namespace PathFinderRPG
         private CharacterClass GetCharacterClass()
         {
             return (CharacterClass)_characterClass.value + _dropdownHeadingOffset;
+        }
+
+        /// <summary>
+        /// Returns the selected character ability
+        /// </summary>
+        /// <returns>CharacterAbility</returns>
+        private CharacterAbility GetCharacterAbility()
+        {
+            return (CharacterAbility)_abilities.value + _dropdownHeadingOffset;
         }
     }
 }
