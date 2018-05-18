@@ -41,60 +41,30 @@ namespace PathFinderRPG
         public static List<AbilityBonus> GetAbilityBonuses(CharacterRace characterRace)
         {
             List<AbilityBonus> abilityBonuses = new List<AbilityBonus>();
-            AbilityBonus abilityBonus;
 
-            // TODO: Refactor
             switch (characterRace)
             {
                 case CharacterRace.Dwarf:
 
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Constitution, 2);
-                    abilityBonuses.Add(abilityBonus);
-
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Wisdom, 2);
-                    abilityBonuses.Add(abilityBonus);
-
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Charisma, -2);
-                    abilityBonuses.Add(abilityBonus);
+                    abilityBonuses = GetDwarfRaceAbilityBonuses();
 
                     break;
 
                 case CharacterRace.Elf:
 
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Dexterity, 2);
-                    abilityBonuses.Add(abilityBonus);
+                    abilityBonuses = GetElfRaceAbilityBonuses();
 
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Constitution, -2);
-                    abilityBonuses.Add(abilityBonus);
-
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Intelligence, 2);
-                    abilityBonuses.Add(abilityBonus);
-                    
                     break;
 
                 case CharacterRace.Gnome:
 
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Strength, -2);
-                    abilityBonuses.Add(abilityBonus);
-
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Constitution, 2);
-                    abilityBonuses.Add(abilityBonus);
-
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Charisma, 2);
-                    abilityBonuses.Add(abilityBonus);
+                    abilityBonuses = GetGnomeRaceAbilityBonuses();
 
                     break;
 
                 case CharacterRace.Halfling:
 
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Strength, -2);
-                    abilityBonuses.Add(abilityBonus);
-
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Dexterity, 2);
-                    abilityBonuses.Add(abilityBonus);
-
-                    abilityBonus = AbilityBonus.CreateInstance(CharacterAbility.Charisma, 2);
-                    abilityBonuses.Add(abilityBonus);
+                    abilityBonuses = GetHalflingRaceAbilityBonuses();
 
                     break;
 
@@ -304,6 +274,73 @@ namespace PathFinderRPG
         public static int GetHealth(Dice.DieType hitDie)
         {
             return (int)hitDie;
+        }
+
+
+        // TOOO: The following will become apart of the specific class type classes after the enum->class change
+
+        /// <summary>
+        /// Returns a list of ability bonuses specifically for the Dwarf character class
+        /// </summary>
+        /// <returns>List</returns>
+        private static List<AbilityBonus> GetDwarfRaceAbilityBonuses()
+        {
+            List<AbilityBonus> abilityBonuses = new List<AbilityBonus>
+            {
+                AbilityBonus.CreateInstance(CharacterAbility.Constitution, 2),
+                AbilityBonus.CreateInstance(CharacterAbility.Wisdom, 2),
+                AbilityBonus.CreateInstance(CharacterAbility.Charisma, -2)
+            };
+
+            return abilityBonuses;
+        }
+
+        /// <summary>
+        /// Returns a list of ability bonuses specifically for the Elf character class
+        /// </summary>
+        /// <returns>List</returns>
+        private static List<AbilityBonus> GetElfRaceAbilityBonuses()
+        {
+            List<AbilityBonus> abilityBonuses = new List<AbilityBonus>
+            {
+                AbilityBonus.CreateInstance(CharacterAbility.Dexterity, 2),
+                AbilityBonus.CreateInstance(CharacterAbility.Constitution, -2),
+                AbilityBonus.CreateInstance(CharacterAbility.Intelligence, 2)
+            };
+
+            return abilityBonuses;
+        }
+
+        /// <summary>
+        /// Returns a list of ability bonuses specifically for the Gnome character class
+        /// </summary>
+        /// <returns>List</returns>
+        private static List<AbilityBonus> GetGnomeRaceAbilityBonuses()
+        {
+            List<AbilityBonus> abilityBonuses = new List<AbilityBonus>
+            {
+                AbilityBonus.CreateInstance(CharacterAbility.Strength, -2),
+                AbilityBonus.CreateInstance(CharacterAbility.Constitution, 2),
+                AbilityBonus.CreateInstance(CharacterAbility.Charisma, 2)
+            };
+
+            return abilityBonuses;
+        }
+
+        /// <summary>
+        /// Returns a list of ability bonuses specifically for the Halfling character class
+        /// </summary>
+        /// <returns>List</returns>
+        private static List<AbilityBonus> GetHalflingRaceAbilityBonuses()
+        {
+            List<AbilityBonus> abilityBonuses = new List<AbilityBonus>
+            {
+                AbilityBonus.CreateInstance(CharacterAbility.Strength, -2),
+                AbilityBonus.CreateInstance(CharacterAbility.Dexterity, 2),
+                AbilityBonus.CreateInstance(CharacterAbility.Charisma, 2)
+            };
+
+            return abilityBonuses;
         }
 
     }
