@@ -4,6 +4,7 @@ using System.Collections.Generic;
 // TODO: Move these to a more suitable location, potentially their own namespace
 
 public enum CharacterAbility : int { Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma};
+public enum CharacterAttribute : int { Level, Experience, HitDie, Health };
 
 public enum CharacterRace : int { Dwarf, Elf, Gnome, Half_Elf, Half_Orc, Halfling, Human };
 public enum CharacterClass : int { Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Wizard };

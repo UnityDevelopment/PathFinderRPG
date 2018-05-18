@@ -48,9 +48,8 @@ namespace PathFinderRPG
         public Text _level;
         public Text _experience;
         public Text _health;
-
-
-        private Dice.DieType _hitDie;
+        public Text _hitDie;
+        
 
 
         // dropdown heading index offset
@@ -110,7 +109,7 @@ namespace PathFinderRPG
             UpdateAbilityScore(CharacterAbility.Charisma);
             UpdateAbilityModifier(CharacterAbility.Charisma);
         }
-        
+
         /// <summary>
         /// Event handler for race selection
         /// </summary>
@@ -199,10 +198,10 @@ namespace PathFinderRPG
             CharacterRace characterRace = GetCharacterRace();
             CharacterClass characterClass = GetCharacterClass();
 
-            // TODO: Refactor
-            int level = ParseInput(_level.text);
-            int experience = ParseInput(_experience.text);
-            int health = ParseInput(_health.text);
+            int level = ParseAttribute(CharacterAttribute.Level);
+            int experience = ParseAttribute(CharacterAttribute.Experience);
+            Dice.DieType hitDie = (Dice.DieType)ParseAttribute(CharacterAttribute.HitDie);
+            int health = ParseAttribute(CharacterAttribute.Health);
 
             // returns a Character class
             Character character = CharacterCreator.Create
@@ -223,7 +222,7 @@ namespace PathFinderRPG
                     characterClass,
                     level,
                     experience,
-                    _hitDie,    // TODO: Code smell
+                    hitDie,
                     health
                 );
 
@@ -328,7 +327,7 @@ namespace PathFinderRPG
         private void UpdateAbilityScore(CharacterAbility characterAbility)
         {
             Text ability = GetAbilityGameObject(characterAbility);
-            
+
             int abilityScore = CharacterCreator.RollForAbilityScore();
 
             ability.text = abilityScore.ToString();
@@ -402,6 +401,18 @@ namespace PathFinderRPG
             int modifier = CharacterCreator.CalculateAbilityModifier(score, bonus);
 
             abilityModifier.text = modifier.ToString(true);
+        }
+
+        /// <summary>
+        /// Updates the attribute for the specified character attribute
+        /// </summary>
+        /// <param name="characterAttribute">The character attribute</param>
+        /// <param name="value">The attribute value</param>
+        private void UpdateAttribute(CharacterAttribute characterAttribute, int value)
+        {
+            Text attribute = GetAttributeGameObject(characterAttribute);
+
+            attribute.text = value.ToString();
         }
 
 
@@ -583,6 +594,45 @@ namespace PathFinderRPG
             return abilityModifier;
         }
 
+        /// <summary>
+        /// Returns the attribute's Text GameObject for the specified character attribute
+        /// </summary>
+        /// <param name="characterAttribute">The character attribute</param>
+        /// <returns>Text</returns>
+        private Text GetAttributeGameObject(CharacterAttribute characterAttribute)
+        {
+            Text attribute = null;
+
+            switch (characterAttribute)
+            {
+                case CharacterAttribute.Level:
+                    {
+                        attribute = _level;
+
+                        break;
+                    }
+                case CharacterAttribute.Experience:
+                    {
+                        attribute = _experience;
+
+                        break;
+                    }
+                case CharacterAttribute.HitDie:
+                    {
+                        attribute = _hitDie;
+
+                        break;
+                    }
+                case CharacterAttribute.Health:
+                    {
+                        attribute = _health;
+
+                        break;
+                    }
+            }
+
+            return attribute;
+        }
 
         /// <summary>
         /// Parses ability score
@@ -618,6 +668,18 @@ namespace PathFinderRPG
             Text abilityModifier = GetAbilityModifierGameObject(characterAbility);
 
             return ParseInput(abilityModifier.text);
+        }
+
+        /// <summary>
+        /// Parses attribute
+        /// </summary>
+        /// <param name="characterAttribute">The character attribute</param>
+        /// <returns>int</returns>
+        private int ParseAttribute(CharacterAttribute characterAttribute)
+        {
+            Text attribute = GetAttributeGameObject(characterAttribute);
+
+            return ParseInput(attribute.text);
         }
 
         /// <summary>
@@ -681,10 +743,10 @@ namespace PathFinderRPG
         /// <param name="characterClass">The character class</param>
         private void SetClassSpecificAttributes(CharacterClass characterClass)
         {
-            _hitDie = CharacterCreator.GetHitDie(characterClass);
+            Dice.DieType hitDie = CharacterCreator.GetHitDie(characterClass);
 
-            // UpdateAttribute method call?
-            _health.text = CharacterCreator.GetHealth(_hitDie).ToString();
+            UpdateAttribute(CharacterAttribute.HitDie, (int)hitDie);
+            UpdateAttribute(CharacterAttribute.Health, CharacterCreator.GetHealth(hitDie));
 
             // TODO: Apply modifiers
         }
