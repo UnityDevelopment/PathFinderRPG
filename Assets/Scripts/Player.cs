@@ -1,10 +1,11 @@
-﻿using UnityEngine;
-
-namespace PathFinderRPG
+﻿namespace PathfinderRPG
 {
+    using PathfinderRPG.Entities;
+
+    using UnityEngine;
+
     public class Player : MonoBehaviour
     {
-        // TODO: Consider access modifier
         public Character character;
     }
 }

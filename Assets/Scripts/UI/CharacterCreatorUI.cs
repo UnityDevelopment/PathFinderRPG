@@ -1,11 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using PathFinderRPG.Extensions;
-
-namespace PathFinderRPG
+﻿namespace PathfinderRPG.UI
 {
+    using System;
+    using System.Collections.Generic;
+
+    using PathfinderRPG.Entities;
+    using PathfinderRPG.Entities.Abilities;
+    using PathfinderRPG.Entities.Attributes;
+    using PathfinderRPG.Entities.Classes;
+    using PathfinderRPG.Entities.Races;
+    using PathfinderRPG.Extensions;
+
+    using UnityEngine;
+    using UnityEngine.UI;
+
     public class CharacterCreatorUI : MonoBehaviour
     {
         // UI objects
@@ -17,17 +24,17 @@ namespace PathFinderRPG
         public Text _wisdom;
         public Text _charisma;
 
-        [Header("Ability Bonuses")]
-        public Text _strengthBonus;
-        public Text _dexterityBonus;
-        public Text _constitutionBonus;
-        public Text _intelligenceBonus;
-        public Text _wisdomBonus;
-        public Text _charismaBonus;
+        [Header("Racial Ability Modifiers")]
+        public Text _strengthRacialModifier;
+        public Text _dexterityRacialModifier;
+        public Text _constitutionRacialModifier;
+        public Text _intelligenceRacialModifier;
+        public Text _wisdomRacialModifier;
+        public Text _charismaRacialModifier;
 
         [Space(10f)]
 
-        public Dropdown _abilities;
+        public Dropdown _characterAbility;
 
         [Header("Ability Modifiers")]
         public Text _strengthModifier;
@@ -49,20 +56,14 @@ namespace PathFinderRPG
         public Text _experience;
         public Text _health;
         public Text _hitDie;
-        
-
-
-        // dropdown heading index offset
-        private int _dropdownHeadingOffset = -1;
-
 
         /// <summary>
         /// Event handler for strength ability
         /// </summary>
         public void RollStrength()
         {
-            UpdateAbilityScore(CharacterAbility.Strength);
-            UpdateAbilityModifier(CharacterAbility.Strength);
+            UpdateAbilityScore(typeof(Strength));
+            UpdateAbilityModifier(typeof(Strength));
         }
 
         /// <summary>
@@ -70,8 +71,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollDexterity()
         {
-            UpdateAbilityScore(CharacterAbility.Dexterity);
-            UpdateAbilityModifier(CharacterAbility.Dexterity);
+            UpdateAbilityScore(typeof(Dexterity));
+            UpdateAbilityModifier(typeof(Dexterity));
         }
 
         /// <summary>
@@ -79,8 +80,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollConstitution()
         {
-            UpdateAbilityScore(CharacterAbility.Constitution);
-            UpdateAbilityModifier(CharacterAbility.Constitution);
+            UpdateAbilityScore(typeof(Constitution));
+            UpdateAbilityModifier(typeof(Constitution));
         }
 
         /// <summary>
@@ -88,8 +89,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollIntelligence()
         {
-            UpdateAbilityScore(CharacterAbility.Intelligence);
-            UpdateAbilityModifier(CharacterAbility.Intelligence);
+            UpdateAbilityScore(typeof(Intelligence));
+            UpdateAbilityModifier(typeof(Intelligence));
         }
 
         /// <summary>
@@ -97,8 +98,8 @@ namespace PathFinderRPG
         /// </summary>
         public void RollWisdom()
         {
-            UpdateAbilityScore(CharacterAbility.Wisdom);
-            UpdateAbilityModifier(CharacterAbility.Wisdom);
+            UpdateAbilityScore(typeof(Wisdom));
+            UpdateAbilityModifier(typeof(Wisdom));
         }
 
         /// <summary>
@@ -106,104 +107,67 @@ namespace PathFinderRPG
         /// </summary>
         public void RollCharisma()
         {
-            UpdateAbilityScore(CharacterAbility.Charisma);
-            UpdateAbilityModifier(CharacterAbility.Charisma);
+            UpdateAbilityScore(typeof(Charisma));
+            UpdateAbilityModifier(typeof(Charisma));
         }
 
         /// <summary>
-        /// Event handler for race selection
+        /// Event handler for character race selection
         /// </summary>
         public void SelectedRaceChanged()
         {
-            CharacterRace characterRace = GetCharacterRace();
+            RaceBase characterRace = GetCharacterRace();
 
-            if (SelectedOptionIsValid(typeof(CharacterRace), characterRace))
-            {
-                // TODO: Refactor this with enum -> class changes
-                if (characterRace == CharacterRace.Half_Elf || characterRace == CharacterRace.Half_Orc || characterRace == CharacterRace.Human)
-                {
-                    ClearAbilityBonuses();
-
-                    EnableRacialBonusSelection();
-                }
-                else
-                {
-                    DisableRacialBonusSelection();
-
-                    UpdateAbilityBonuses(characterRace);
-                }
-
-                UpdateAbilityModifiers();
-            }
+            UpdateRacialAbilityModifiers(characterRace);
+            UpdateAbilityModifiers();
         }
 
         /// <summary>
-        /// Event handler for class selection
+        /// Event handler for character class selection
         /// </summary>
         public void SelectedClassChanged()
         {
-            CharacterClass characterClass = GetCharacterClass();
+            ClassBase characterClass = GetCharacterClass();
 
-            if (SelectedOptionIsValid(typeof(CharacterClass), characterClass))
-            {
-                SetClassSpecificAttributes(characterClass);
-            }
-
-            PopulateLevel1Attributes();
+            UpdateAttributes(characterClass);
         }
 
         /// <summary>
-        /// Event handler for ability selection
+        /// Event handler for character ability selection
         /// </summary>
         public void SelectedAbilityChanged()
         {
-            if (_abilities.isActiveAndEnabled)
+            if (_characterAbility.isActiveAndEnabled)
             {
-                CharacterAbility characterAbility = GetCharacterAbility();
+                AbilityBase characterAbility = GetCharacterAbility();
 
-                if (SelectedOptionIsValid(typeof(CharacterAbility), characterAbility))
-                {
-                    UpdateAbilityBonuses(characterAbility);
-                    UpdateAbilityModifiers();
-                }
-                else
-                {
-                    ClearAbilityBonuses();
-                }
+                UpdateRacialAbilityModifiers(characterAbility.GetType());
+                UpdateAbilityModifiers();
             }
         }
-
 
         /// <summary>
         /// Event handler for character creation
         /// </summary>
         public void CreateCharacter()
         {
-            // TODO: Validate dropdown selections ( > -1 )
-            // TODO: Validate abilities are valid ( > 0 )
+            int baseStrength = CalculateBaseAbility(typeof(Strength));
+            int baseDexterity = CalculateBaseAbility(typeof(Dexterity));
+            int baseConstitution = CalculateBaseAbility(typeof(Constitution));
+            int baseIntelligence = CalculateBaseAbility(typeof(Intelligence));
+            int baseWisdom = CalculateBaseAbility(typeof(Wisdom));
+            int baseCharisma = CalculateBaseAbility(typeof(Charisma));
+            int strengthModifier = ParseAbilityModifier(typeof(Strength));
+            int dexterityModifier = ParseAbilityModifier(typeof(Dexterity));
+            int constitutionModifier = ParseAbilityModifier(typeof(Constitution));
+            int intelligenceModifier = ParseAbilityModifier(typeof(Intelligence));
+            int wisdomModifier = ParseAbilityModifier(typeof(Wisdom));
+            int charismaModifier = ParseAbilityModifier(typeof(Charisma));
+            RaceBase characterRace = GetCharacterRace();
+            ClassBase characterClass = GetCharacterClass();
+            int level = ParseAttribute(typeof(Level));
+            int experience = ParseAttribute(typeof(Experience));
 
-            int baseStrength = CalculateBaseAbility(CharacterAbility.Strength);
-            int baseDexterity = CalculateBaseAbility(CharacterAbility.Dexterity);
-            int baseConstitution = CalculateBaseAbility(CharacterAbility.Constitution);
-            int baseIntelligence = CalculateBaseAbility(CharacterAbility.Intelligence);
-            int baseWisdom = CalculateBaseAbility(CharacterAbility.Wisdom);
-            int baseCharisma = CalculateBaseAbility(CharacterAbility.Charisma);
-            int strengthModifier = ParseAbilityModifier(CharacterAbility.Strength);
-            int dexterityModifier = ParseAbilityModifier(CharacterAbility.Dexterity);
-            int constitutionModifier = ParseAbilityModifier(CharacterAbility.Constitution);
-            int intelligenceModifier = ParseAbilityModifier(CharacterAbility.Intelligence);
-            int wisdomModifier = ParseAbilityModifier(CharacterAbility.Wisdom);
-            int charismaModifier = ParseAbilityModifier(CharacterAbility.Charisma);
-
-            CharacterRace characterRace = GetCharacterRace();
-            CharacterClass characterClass = GetCharacterClass();
-
-            int level = ParseAttribute(CharacterAttribute.Level);
-            int experience = ParseAttribute(CharacterAttribute.Experience);
-            Dice.DieType hitDie = (Dice.DieType)ParseAttribute(CharacterAttribute.HitDie);
-            int health = ParseAttribute(CharacterAttribute.Health);
-
-            // returns a Character class
             Character character = CharacterCreator.Create
                 (
                     baseStrength,
@@ -221,9 +185,7 @@ namespace PathFinderRPG
                     characterRace,
                     characterClass,
                     level,
-                    experience,
-                    hitDie,
-                    health
+                    experience
                 );
 
             // TODO: Temporary
@@ -231,9 +193,8 @@ namespace PathFinderRPG
             player.character = character;
         }
 
-
         /// <summary>
-        /// Initialisation
+        /// Initialises the instance of the <see cref="CharacterCreatorUI" /> class
         /// </summary>
         private void Start()
         {
@@ -242,91 +203,80 @@ namespace PathFinderRPG
             PopulateCharacterAbilities();
         }
 
-
         /// <summary>
-        /// Populate the Character Races dropdown
+        /// Populate the character races dropdown
         /// </summary>
         private void PopulateCharacterRaces()
         {
-            string[] characterRaces = Enum.GetNames(typeof(CharacterRace));
+            List<string> characterRaces = CharacterCreator.GetRaceDisplayNames();
 
-            PopulateDropdown(_characterRace, "Race", characterRaces);
+            PopulateDropdown(_characterRace, characterRaces);
         }
 
         /// <summary>
-        /// Populate the Character Classes dropdown
+        /// Populate the character classes dropdown
         /// </summary>
         private void PopulateCharacterClasses()
         {
-            string[] characterClasses = Enum.GetNames(typeof(CharacterClass));
+            List<string> characterClasses = CharacterCreator.GetClassDisplayNames();
 
-            PopulateDropdown(_characterClass, "Class", characterClasses);
+            PopulateDropdown(_characterClass, characterClasses);
         }
 
         /// <summary>
-        /// Populate the Character Abilities dropdown
+        /// Populate the character abilities dropdown
         /// </summary>
         private void PopulateCharacterAbilities()
         {
-            string[] characterAbilities = Enum.GetNames(typeof(CharacterAbility));
+            List<string> characterAbilities = CharacterCreator.GetAbilityDisplayNames();
 
-            PopulateDropdown(_abilities, "Ability", characterAbilities);
+            PopulateDropdown(_characterAbility, characterAbilities);
         }
 
         /// <summary>
-        /// Populate a dropdown menu with option
+        /// Populates <paramref name="dropdown"/> with <paramref name="optionItems"/>
         /// </summary>
         /// <param name="dropdown">The dropdown menu to populate</param>
-        /// <param name="headingOption">The heading option for the menu</param>
-        /// <param name="options">The options</param>
-        private void PopulateDropdown(Dropdown dropdown, string headingOption, string[] options)
+        /// <param name="optionItems">The option items</param>
+        private void PopulateDropdown(Dropdown dropdown, List<string> optionItems)
         {
-            dropdown.ClearOptions();
-
-            List<string> optionItems = new List<string>(options);
-
-            optionItems.Insert(0, headingOption);
-
             dropdown.AddOptions(optionItems);
         }
 
         /// <summary>
-        /// Enables the racial bonus abilities dropdown
+        /// Enables the racial modifiers ability dropdown
         /// </summary>
-        private void EnableRacialBonusSelection()
+        private void EnableRacialModifierSelection()
         {
-            _abilities.value = 0;
-            _abilities.gameObject.SetActive(true);
+            DropdownSetActive(_characterAbility, true);
         }
 
         /// <summary>
-        /// Disables the racial bonus abilities dropdown
+        /// Disables the racial modifiers ability dropdown
         /// </summary>
-        private void DisableRacialBonusSelection()
+        private void DisableRacialModifierSelection()
         {
-            _abilities.gameObject.SetActive(false);
-            _abilities.value = 0;
+            DropdownSetActive(_characterAbility, false);
         }
 
         /// <summary>
-        /// Indicates whether a selected option is valid
+        /// Enables or disables <paramref name="dropdown"/> based upon the value of <paramref name="active"/>
         /// </summary>
-        /// <param name="enumType">The enum type</param>
-        /// <param name="option">The selected option</param>
-        /// <returns>bool</returns>
-        private bool SelectedOptionIsValid(Type enumType, object option)
+        /// <param name="dropdown">The dropdown menu to enable/disable</param>
+        /// <param name="active">The state to set</param>
+        private void DropdownSetActive(Dropdown dropdown, bool active)
         {
-            return Enum.IsDefined(enumType, option);
+            dropdown.value = 0;
+            dropdown.gameObject.SetActive(active);
         }
 
-
         /// <summary>
-        /// Recalculates and updates the ability score for the specified character ability
+        /// Updates the ability score for the specified character ability type
         /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        private void UpdateAbilityScore(CharacterAbility characterAbility)
+        /// <param name="characterAbilityType">The character ability type</param>
+        private void UpdateAbilityScore(Type characterAbilityType)
         {
-            Text ability = GetAbilityGameObject(characterAbility);
+            Text ability = GetAbilityGameObject(characterAbilityType);
 
             int abilityScore = CharacterCreator.RollForAbilityScore();
 
@@ -334,45 +284,51 @@ namespace PathFinderRPG
         }
 
         /// <summary>
-        /// Updates the ability bonuses for the selected race
+        /// Updates the racial ability modifiers for the selected race
         /// </summary>
-        private void UpdateAbilityBonuses(CharacterRace characterRace)
+        /// <param name="characterRace">The character race</param>
+        private void UpdateRacialAbilityModifiers(RaceBase characterRace)
         {
-            ClearAbilityBonuses();
+            ClearRacialAbilityModifiers();
 
-            List<AbilityBonus> abilityBonuses = CharacterCreator.GetAbilityBonuses(characterRace);
-
-            foreach (AbilityBonus abilityBonus in abilityBonuses)
+            if (characterRace.AbilityModifiers.Count == 0)
             {
-                UpdateAbilityBonus(abilityBonus.Ability, abilityBonus.Value);
+                EnableRacialModifierSelection();
+            }
+            else
+            {
+                DisableRacialModifierSelection();
+
+                UpdateRacialAbilityModifier(_strengthRacialModifier, characterRace.GetModifier<Strength>());
+                UpdateRacialAbilityModifier(_dexterityRacialModifier, characterRace.GetModifier<Dexterity>());
+                UpdateRacialAbilityModifier(_constitutionRacialModifier, characterRace.GetModifier<Constitution>());
+                UpdateRacialAbilityModifier(_intelligenceRacialModifier, characterRace.GetModifier<Intelligence>());
+                UpdateRacialAbilityModifier(_wisdomRacialModifier, characterRace.GetModifier<Wisdom>());
+                UpdateRacialAbilityModifier(_charismaRacialModifier, characterRace.GetModifier<Charisma>());
             }
         }
 
         /// <summary>
-        /// Updates the ability bonus for the selected ability
+        /// Updates the racial ability modifiers for the selected ability
         /// </summary>
-        private void UpdateAbilityBonuses(CharacterAbility characterAbility)
+        /// <param name="characterAbilityType">The character ability type</param>
+        private void UpdateRacialAbilityModifiers(Type characterAbilityType)
         {
-            ClearAbilityBonuses();
+            AbilityModifier racialAbilityModifier = CharacterCreator.GetRacialAbilityModifier(characterAbilityType);
+            Text characterAbilityRacialModifier = GetAbilityRacialModifierGameObject(characterAbilityType);
 
-            List<AbilityBonus> abilityBonuses = CharacterCreator.GetAbilityBonuses(characterAbility);
-
-            foreach (AbilityBonus abilityBonus in abilityBonuses)
-            {
-                UpdateAbilityBonus(abilityBonus.Ability, abilityBonus.Value);
-            }
+            ClearRacialAbilityModifiers();
+            UpdateRacialAbilityModifier(characterAbilityRacialModifier, racialAbilityModifier.Modifier);
         }
 
         /// <summary>
-        /// Updates the ability bonus for the specified character ability
+        /// Updates the character ability's <paramref name="characterAbilityRacialModifier"/> with the value of <paramref name="modifier"/>
         /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        /// <param name="bonus">The ability bonus</param>
-        private void UpdateAbilityBonus(CharacterAbility characterAbility, int bonus)
+        /// <param name="characterAbilityRacialModifier">The character ability</param>
+        /// <param name="modifier">The racial ability modifier</param>
+        private void UpdateRacialAbilityModifier(Text characterAbilityRacialModifier, int modifier)
         {
-            Text abilityBonus = GetAbilityBonusGameObject(characterAbility);
-
-            abilityBonus.text = bonus.ToString(true);
+            characterAbilityRacialModifier.text = modifier.ToString(true);
         }
 
         /// <summary>
@@ -380,375 +336,330 @@ namespace PathFinderRPG
         /// </summary>
         private void UpdateAbilityModifiers()
         {
-            UpdateAbilityModifier(CharacterAbility.Strength);
-            UpdateAbilityModifier(CharacterAbility.Dexterity);
-            UpdateAbilityModifier(CharacterAbility.Constitution);
-            UpdateAbilityModifier(CharacterAbility.Intelligence);
-            UpdateAbilityModifier(CharacterAbility.Wisdom);
-            UpdateAbilityModifier(CharacterAbility.Charisma);
+            UpdateAbilityModifier(typeof(Strength));
+            UpdateAbilityModifier(typeof(Dexterity));
+            UpdateAbilityModifier(typeof(Constitution));
+            UpdateAbilityModifier(typeof(Intelligence));
+            UpdateAbilityModifier(typeof(Wisdom));
+            UpdateAbilityModifier(typeof(Charisma));
         }
 
         /// <summary>
-        /// Recalculates and updates the ability's modifier for the specified character ability
+        /// Recalculates and updates the ability's modifier for the specified character ability type
         /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        private void UpdateAbilityModifier(CharacterAbility characterAbility)
+        /// <param name="characterAbilityType">The character ability type</param>
+        private void UpdateAbilityModifier(Type characterAbilityType)
         {
-            Text abilityModifier = GetAbilityModifierGameObject(characterAbility);
+            Text abilityModifier = GetAbilityModifierGameObject(characterAbilityType);
 
-            int score = ParseAbilityScore(characterAbility);
-            int bonus = ParseAbilityBonus(characterAbility);
-            int modifier = CharacterCreator.CalculateAbilityModifier(score, bonus);
+            int score = ParseAbilityScore(characterAbilityType);
+            int racialModifier = ParseRacialAbilityModifier(characterAbilityType);
+            int modifier = CharacterCreator.CalculateAbilityModifier(score, racialModifier);
 
             abilityModifier.text = modifier.ToString(true);
         }
 
         /// <summary>
-        /// Updates the attribute for the specified character attribute
+        /// Updates class specific attributes for the specific character class
         /// </summary>
-        /// <param name="characterAttribute">The character attribute</param>
-        /// <param name="value">The attribute value</param>
-        private void UpdateAttribute(CharacterAttribute characterAttribute, int value)
+        /// <param name="characterClass">The character class</param>
+        private void UpdateAttributes(ClassBase characterClass)
         {
-            Text attribute = GetAttributeGameObject(characterAttribute);
+            // TODO: Displayed health will need to be calculated differently if level selection is available later
+            UpdateAttribute(typeof(Health), (int)characterClass.HitDie);
+
+            // TODO: Character level may be/may need to be selectable in a furture version
+            PopulateLevel1Attributes();
+        }
+
+        /// <summary>
+        /// Updates the attribute for the specified character attribute type
+        /// </summary>
+        /// <param name="characterAttributeType">The character attribute type</param>
+        /// <param name="value">The attribute value</param>
+        private void UpdateAttribute(Type characterAttributeType, int value)
+        {
+            Text attribute = GetAttributeGameObject(characterAttributeType);
 
             attribute.text = value.ToString();
         }
 
-
         /// <summary>
-        /// Clears the currently display ability bonuses
+        /// Returns the ability's Text GameObject for the specified character ability type
         /// </summary>
-        private void ClearAbilityBonuses()
+        /// <param name="characterAbilityType">The character ability type</param>
+        /// <returns>The corresponding UI Text GameObject for the character ability</returns>
+        private Text GetAbilityGameObject(Type characterAbilityType)
         {
-            ClearAbilityBonus(CharacterAbility.Strength);
-            ClearAbilityBonus(CharacterAbility.Dexterity);
-            ClearAbilityBonus(CharacterAbility.Constitution);
-            ClearAbilityBonus(CharacterAbility.Intelligence);
-            ClearAbilityBonus(CharacterAbility.Wisdom);
-            ClearAbilityBonus(CharacterAbility.Charisma);
-        }
+            Text abilityGameObject = null;
 
-        /// <summary>
-        /// Clears the ability's Text GameObject for the specified character ability
-        /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        private void ClearAbilityBonus(CharacterAbility characterAbility)
-        {
-            Text abilityBonus = GetAbilityBonusGameObject(characterAbility);
-
-            abilityBonus.text = String.Empty;
-        }
-
-
-        /// <summary>
-        /// Returns the ability's Text GameObject for the specified character ability
-        /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        /// <returns>Text</returns>
-        private Text GetAbilityGameObject(CharacterAbility characterAbility)
-        {
-            Text ability = null;
-
-            switch (characterAbility)
+            // TODO: Improve this.  Could we use an IDictionary to map TextUI objects to types?
+            if (characterAbilityType == typeof(Strength))
             {
-                case CharacterAbility.Strength:
-
-                    ability = _strength;
-
-                    break;
-
-                case CharacterAbility.Dexterity:
-
-                    ability = _dexterity;
-
-                    break;
-
-                case CharacterAbility.Constitution:
-
-                    ability = _constitution;
-
-                    break;
-
-                case CharacterAbility.Intelligence:
-
-                    ability = _intelligence;
-
-                    break;
-
-                case CharacterAbility.Wisdom:
-
-                    ability = _wisdom;
-
-                    break;
-
-                case CharacterAbility.Charisma:
-
-                    ability = _charisma;
-
-                    break;
+                abilityGameObject = _strength;
+            }
+            else if (characterAbilityType == typeof(Dexterity))
+            {
+                abilityGameObject = _dexterity;
+            }
+            else if (characterAbilityType == typeof(Constitution))
+            {
+                abilityGameObject = _constitution;
+            }
+            else if (characterAbilityType == typeof(Intelligence))
+            {
+                abilityGameObject = _intelligence;
+            }
+            else if (characterAbilityType == typeof(Wisdom))
+            {
+                abilityGameObject = _wisdom;
+            }
+            else if (characterAbilityType == typeof(Charisma))
+            {
+                abilityGameObject = _charisma;
             }
 
-            return ability;
+            return abilityGameObject;
         }
 
         /// <summary>
-        /// Returns the ability's bonus Text GameObject for the specified character ability
+        /// Returns the character ability racial modifier's UI Text GameObject
         /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        /// <returns>Text</returns>
-        private Text GetAbilityBonusGameObject(CharacterAbility characterAbility)
+        /// <param name="characterAbilityType">The character ability type</param>
+        /// <returns>The corresponding UI Text GameObject for the character ability racial modifier</returns>
+        private Text GetAbilityRacialModifierGameObject(Type characterAbilityType)
         {
-            Text abilityBonus = null;
+            Text characterAbilityRacialModifier = null;
 
-            switch (characterAbility)
+            // TODO: Improve this.  Could we use an IDictionary to map TextUI objects to types?
+            if (characterAbilityType == typeof(Strength))
             {
-                case CharacterAbility.Strength:
-
-                    abilityBonus = _strengthBonus;
-
-                    break;
-
-                case CharacterAbility.Dexterity:
-
-                    abilityBonus = _dexterityBonus;
-
-                    break;
-
-                case CharacterAbility.Constitution:
-
-                    abilityBonus = _constitutionBonus;
-
-                    break;
-
-                case CharacterAbility.Intelligence:
-
-                    abilityBonus = _intelligenceBonus;
-
-                    break;
-
-                case CharacterAbility.Wisdom:
-
-                    abilityBonus = _wisdomBonus;
-
-                    break;
-
-                case CharacterAbility.Charisma:
-
-                    abilityBonus = _charismaBonus;
-
-                    break;
+                characterAbilityRacialModifier = _strengthRacialModifier;
+            }
+            else if (characterAbilityType == typeof(Dexterity))
+            {
+                characterAbilityRacialModifier = _dexterityRacialModifier;
+            }
+            else if (characterAbilityType == typeof(Constitution))
+            {
+                characterAbilityRacialModifier = _constitutionRacialModifier;
+            }
+            else if (characterAbilityType == typeof(Intelligence))
+            {
+                characterAbilityRacialModifier = _intelligenceRacialModifier;
+            }
+            else if (characterAbilityType == typeof(Wisdom))
+            {
+                characterAbilityRacialModifier = _wisdomRacialModifier;
+            }
+            else if (characterAbilityType == typeof(Charisma))
+            {
+                characterAbilityRacialModifier = _charismaRacialModifier;
             }
 
-            return abilityBonus;
+            return characterAbilityRacialModifier;
         }
 
         /// <summary>
-        /// Returns the ability's modifier Text GameObject for the specified character ability
+        /// Returns the ability's modifier Text GameObject for the specified character ability type
         /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        /// <returns>Text</returns>
-        private Text GetAbilityModifierGameObject(CharacterAbility characterAbility)
+        /// <param name="characterAbilityType">The character ability type</param>
+        /// <returns>The corresponding UI Text GameObject for the character ability's modifier</returns>
+        private Text GetAbilityModifierGameObject(Type characterAbilityType)
         {
-            Text abilityModifier = null;
+            Text abilityModifierGameObject = null;
 
-            switch (characterAbility)
+            // TODO: Improve this.  Could we use an IDictionary to map TextUI objects to types?
+            if (characterAbilityType == typeof(Strength))
             {
-                case CharacterAbility.Strength:
-
-                    abilityModifier = _strengthModifier;
-
-                    break;
-
-                case CharacterAbility.Dexterity:
-
-                    abilityModifier = _dexterityModifier;
-
-                    break;
-
-                case CharacterAbility.Constitution:
-
-                    abilityModifier = _constitutionModifier;
-
-                    break;
-
-                case CharacterAbility.Intelligence:
-
-                    abilityModifier = _intelligenceModifier;
-
-                    break;
-
-                case CharacterAbility.Wisdom:
-
-                    abilityModifier = _wisdomModifier;
-
-                    break;
-
-                case CharacterAbility.Charisma:
-
-                    abilityModifier = _charismaModifier;
-
-                    break;
+                abilityModifierGameObject = _strengthModifier;
+            }
+            else if (characterAbilityType == typeof(Dexterity))
+            {
+                abilityModifierGameObject = _dexterityModifier;
+            }
+            else if (characterAbilityType == typeof(Constitution))
+            {
+                abilityModifierGameObject = _constitutionModifier;
+            }
+            else if (characterAbilityType == typeof(Intelligence))
+            {
+                abilityModifierGameObject = _intelligenceModifier;
+            }
+            else if (characterAbilityType == typeof(Wisdom))
+            {
+                abilityModifierGameObject = _wisdomModifier;
+            }
+            else if (characterAbilityType == typeof(Charisma))
+            {
+                abilityModifierGameObject = _charismaModifier;
             }
 
-            return abilityModifier;
+            return abilityModifierGameObject;
         }
 
         /// <summary>
-        /// Returns the attribute's Text GameObject for the specified character attribute
+        /// Returns the attribute's Text GameObject for the specified character attribute type
         /// </summary>
-        /// <param name="characterAttribute">The character attribute</param>
-        /// <returns>Text</returns>
-        private Text GetAttributeGameObject(CharacterAttribute characterAttribute)
+        /// <param name="characterAttributeType">The character attribute type</param>
+        /// <returns>The corresponding UI Text GameObject for the attribute</returns>
+        private Text GetAttributeGameObject(Type characterAttributeType)
         {
-            Text attribute = null;
+            Text attributerGameObject = null;
 
-            switch (characterAttribute)
+            // TODO: Improve this.  Could we use an IDictionary to map TextUI objects to types?
+            if (characterAttributeType == typeof(Level))
             {
-                case CharacterAttribute.Level:
-                    {
-                        attribute = _level;
-
-                        break;
-                    }
-                case CharacterAttribute.Experience:
-                    {
-                        attribute = _experience;
-
-                        break;
-                    }
-                case CharacterAttribute.HitDie:
-                    {
-                        attribute = _hitDie;
-
-                        break;
-                    }
-                case CharacterAttribute.Health:
-                    {
-                        attribute = _health;
-
-                        break;
-                    }
+                attributerGameObject = _level;
+            }
+            else if (characterAttributeType == typeof(Experience))
+            {
+                attributerGameObject = _experience;
+            }
+            else if (characterAttributeType == typeof(HitDie))
+            {
+                attributerGameObject = _hitDie;
+            }
+            else if (characterAttributeType == typeof(Health))
+            {
+                attributerGameObject = _health;
             }
 
-            return attribute;
+            return attributerGameObject;
         }
 
         /// <summary>
-        /// Parses ability score
+        /// Clears the racial ability modifiers
         /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        /// <returns>int</returns>
-        private int ParseAbilityScore(CharacterAbility characterAbility)
+        private void ClearRacialAbilityModifiers()
         {
-            Text ability = GetAbilityGameObject(characterAbility);
-
-            return ParseInput(ability.text);
+            ClearRacialAbilityModifier(_strengthRacialModifier);
+            ClearRacialAbilityModifier(_dexterityRacialModifier);
+            ClearRacialAbilityModifier(_constitutionRacialModifier);
+            ClearRacialAbilityModifier(_intelligenceRacialModifier);
+            ClearRacialAbilityModifier(_wisdomRacialModifier);
+            ClearRacialAbilityModifier(_charismaRacialModifier);
         }
 
         /// <summary>
-        /// Parses ability bonus
+        /// Clears the ability's racial modifier
         /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        /// <returns>int</returns>
-        private int ParseAbilityBonus(CharacterAbility characterAbility)
+        /// <param name="racialAbilityModifier">The Text GameObject representing the racial ability modifier</param>
+        private void ClearRacialAbilityModifier(Text racialAbilityModifier)
         {
-            Text abilityBonus = GetAbilityBonusGameObject(characterAbility);
-
-            return ParseInput(abilityBonus.text);
-        }
-
-        /// <summary>
-        /// Parses ability modifier
-        /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        /// <returns>int</returns>
-        private int ParseAbilityModifier(CharacterAbility characterAbility)
-        {
-            Text abilityModifier = GetAbilityModifierGameObject(characterAbility);
-
-            return ParseInput(abilityModifier.text);
-        }
-
-        /// <summary>
-        /// Parses attribute
-        /// </summary>
-        /// <param name="characterAttribute">The character attribute</param>
-        /// <returns>int</returns>
-        private int ParseAttribute(CharacterAttribute characterAttribute)
-        {
-            Text attribute = GetAttributeGameObject(characterAttribute);
-
-            return ParseInput(attribute.text);
-        }
-
-        /// <summary>
-        /// Attempts to parse string as int
-        /// </summary>
-        /// <param name="input">The string</param>
-        /// <returns>int</returns>
-        private int ParseInput(string input)
-        {
-            int result = 0;
-
-            int.TryParse(input, out result);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the sum of the character's ability score and ability bonus
-        /// </summary>
-        /// <param name="characterAbility">The character ability</param>
-        /// <returns>int</returns>
-        private int CalculateBaseAbility(CharacterAbility characterAbility)
-        {
-            int baseAbility;
-
-            baseAbility = ParseAbilityScore(characterAbility) + ParseAbilityBonus(characterAbility);
-
-            return baseAbility;
+            racialAbilityModifier.text = "0";
         }
 
         /// <summary>
         /// Returns the selected character race
         /// </summary>
-        /// <returns>CharacterRace</returns>
-        private CharacterRace GetCharacterRace()
+        /// <returns>A character race corresponding to the race selection</returns>
+        private RaceBase GetCharacterRace()
         {
-            return (CharacterRace)_characterRace.value + _dropdownHeadingOffset;
+            Dropdown.OptionData optionData = GetSelectedDropdownOption(_characterRace);
+
+            RaceBase characterRace = CharacterCreator.FindCharacterRace(optionData.text);
+
+            return characterRace;
         }
 
         /// <summary>
         /// Returns the selected character class
         /// </summary>
-        /// <returns>CharacterClass</returns>
-        private CharacterClass GetCharacterClass()
+        /// <returns>A character class corresponding to the class selection</returns>
+        private ClassBase GetCharacterClass()
         {
-            return (CharacterClass)_characterClass.value + _dropdownHeadingOffset;
+            Dropdown.OptionData optionData = GetSelectedDropdownOption(_characterClass);
+
+            ClassBase characterClass = CharacterCreator.GetCharacterClass(optionData.text);
+
+            return characterClass;
         }
 
         /// <summary>
         /// Returns the selected character ability
         /// </summary>
-        /// <returns>CharacterAbility</returns>
-        private CharacterAbility GetCharacterAbility()
+        /// <returns>A character ability corresponding to the ability selection</returns>
+        private AbilityBase GetCharacterAbility()
         {
-            return (CharacterAbility)_abilities.value + _dropdownHeadingOffset;
+            Dropdown.OptionData optionData = GetSelectedDropdownOption(_characterAbility);
+
+            AbilityBase characterAbility = CharacterCreator.FindCharacterAbility(optionData.text);
+
+            return characterAbility;
         }
 
         /// <summary>
-        /// Sets class specific attributes
+        /// Returns the currently selected option from the specified dropdown menu
         /// </summary>
-        /// <param name="characterClass">The character class</param>
-        private void SetClassSpecificAttributes(CharacterClass characterClass)
+        /// <param name="dropdown">The dropdown menu</param>
+        /// <returns>OptionData for the selected option in the specified dropdown menu</returns>
+        private Dropdown.OptionData GetSelectedDropdownOption(Dropdown dropdown)
         {
-            Dice.DieType hitDie = CharacterCreator.GetHitDie(characterClass);
+            Dropdown.OptionData selectedOption = dropdown.options[dropdown.value];
 
-            UpdateAttribute(CharacterAttribute.HitDie, (int)hitDie);
-            UpdateAttribute(CharacterAttribute.Health, CharacterCreator.GetHealth(hitDie));
+            return selectedOption;
+        }
 
-            // TODO: Apply modifiers
+        /// <summary>
+        /// Parses ability score
+        /// </summary>
+        /// <param name="characterAbilityType">The character ability type</param>
+        /// <returns>An integer representing the ability score value</returns>
+        private int ParseAbilityScore(Type characterAbilityType)
+        {
+            Text ability = GetAbilityGameObject(characterAbilityType);
+
+            return CharacterCreator.ParseInput(ability.text);
+        }
+
+        /// <summary>
+        /// Parses racial ability modifier
+        /// </summary>
+        /// <param name="characterAbilityType">The character ability type</param>
+        /// <returns>An integer representing the racial ability modifier value</returns>
+        private int ParseRacialAbilityModifier(Type characterAbilityType)
+        {
+            Text racialAbilityModifier = GetAbilityRacialModifierGameObject(characterAbilityType);
+
+            return CharacterCreator.ParseInput(racialAbilityModifier.text);
+        }
+
+        /// <summary>
+        /// Parses ability modifier
+        /// </summary>
+        /// <param name="characterAbilityType">The character ability type</param>
+        /// <returns>An integer representing the ability modifier value</returns>
+        private int ParseAbilityModifier(Type characterAbilityType)
+        {
+            Text abilityModifier = GetAbilityModifierGameObject(characterAbilityType);
+
+            return CharacterCreator.ParseInput(abilityModifier.text);
+        }
+
+        /// <summary>
+        /// Parses attribute
+        /// </summary>
+        /// <param name="characterAttributeType">The character attribute type</param>
+        /// <returns>An integer representing the attribute value</returns>
+        private int ParseAttribute(Type characterAttributeType)
+        {
+            Text attribute = GetAttributeGameObject(characterAttributeType);
+
+            return CharacterCreator.ParseInput(attribute.text);
+        }
+
+        /// <summary>
+        /// Returns the sum of the character's ability score and racial ability modifier
+        /// </summary>
+        /// <param name="characterAbilityType">The character ability type</param>
+        /// <returns>The base ability score for the specified character ability</returns>
+        private int CalculateBaseAbility(Type characterAbilityType)
+        {
+            int abilityScore = ParseAbilityScore(characterAbilityType);
+            int racialAbilityModifier = ParseRacialAbilityModifier(characterAbilityType);
+
+            return CharacterCreator.CalculateBaseAbility(abilityScore, racialAbilityModifier);
         }
 
         /// <summary>
@@ -756,7 +667,6 @@ namespace PathFinderRPG
         /// </summary>
         private void PopulateLevel1Attributes()
         {
-            // NOTE: Potentially temporary as level may become selectable
             _level.text = 1.ToString();
             _experience.text = 0.ToString();
         }

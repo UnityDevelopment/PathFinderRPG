@@ -1676,7 +1676,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: 0
 --- !u!222 &612600726
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2175,7 +2175,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: 0
 --- !u!222 &778546522
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3840,7 +3840,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: 0
 --- !u!222 &1323554372
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5276,6 +5276,7 @@ GameObject:
   - component: {fileID: 1692315350}
   - component: {fileID: 1692315349}
   - component: {fileID: 1692315348}
+  - component: {fileID: 1692315351}
   m_Layer: 5
   m_Name: Abilities
   m_TagString: Untagged
@@ -5397,6 +5398,20 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1692315346}
+--- !u!114 &1692315351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1692315346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce4574639e0bdfc4a81d2792682d7b99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _optionData:
+    m_Text: Ability
+    m_Image: {fileID: 0}
 --- !u!1 &1694707297
 GameObject:
   m_ObjectHideFlags: 0
@@ -5860,6 +5875,7 @@ GameObject:
   - component: {fileID: 1734766057}
   - component: {fileID: 1734766056}
   - component: {fileID: 1734766054}
+  - component: {fileID: 1734766058}
   m_Layer: 5
   m_Name: Class
   m_TagString: Untagged
@@ -5981,6 +5997,20 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1734766053}
+--- !u!114 &1734766058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1734766053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce4574639e0bdfc4a81d2792682d7b99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _optionData:
+    m_Text: Class
+    m_Image: {fileID: 0}
 --- !u!1 &1747352558
 GameObject:
   m_ObjectHideFlags: 0
@@ -6116,7 +6146,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: 0
 --- !u!222 &1753945214
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6202,6 +6232,7 @@ GameObject:
   - component: {fileID: 1767814639}
   - component: {fileID: 1767814638}
   - component: {fileID: 1767814637}
+  - component: {fileID: 1767814640}
   m_Layer: 5
   m_Name: Race
   m_TagString: Untagged
@@ -6323,6 +6354,20 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1767814635}
+--- !u!114 &1767814640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1767814635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce4574639e0bdfc4a81d2792682d7b99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _optionData:
+    m_Text: Race
+    m_Image: {fileID: 0}
 --- !u!1 &1779288645
 GameObject:
   m_ObjectHideFlags: 0
@@ -6647,7 +6692,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: 0
 --- !u!222 &1843738826
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7077,7 +7122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1979978526}
   m_Layer: 5
-  m_Name: Bonuses
+  m_Name: Racial Modifiers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7214,13 +7259,13 @@ MonoBehaviour:
   _intelligence: {fileID: 1671131752}
   _wisdom: {fileID: 1012107955}
   _charisma: {fileID: 157167616}
-  _strengthBonus: {fileID: 1323554371}
-  _dexterityBonus: {fileID: 2122001723}
-  _constitutionBonus: {fileID: 612600725}
-  _intelligenceBonus: {fileID: 1843738825}
-  _wisdomBonus: {fileID: 1753945213}
-  _charismaBonus: {fileID: 778546521}
-  _abilities: {fileID: 1692315348}
+  _strengthRacialModifier: {fileID: 1323554371}
+  _dexterityRacialModifier: {fileID: 2122001723}
+  _constitutionRacialModifier: {fileID: 612600725}
+  _intelligenceRacialModifier: {fileID: 1843738825}
+  _wisdomRacialModifier: {fileID: 1753945213}
+  _charismaRacialModifier: {fileID: 778546521}
+  _characterAbility: {fileID: 1692315348}
   _strengthModifier: {fileID: 183086006}
   _dexterityModifier: {fileID: 2081861213}
   _constitutionModifier: {fileID: 1922494452}
@@ -7690,7 +7735,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: 0
 --- !u!222 &2122001724
 CanvasRenderer:
   m_ObjectHideFlags: 0
