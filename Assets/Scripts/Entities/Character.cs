@@ -5,7 +5,7 @@
 
     using UnityEngine;
 
-    public class Character : ObjectBase
+    public class Character : EntityBase
     {
         private int _baseStrength;
         private int _baseDexterity;

@@ -5,7 +5,7 @@
     /// <summary>
     /// Provides common functionality to all derived attribute classes
     /// </summary>
-    public abstract class AttributeBase : ObjectBase, IComparable<AttributeBase>
+    public abstract class AttributeBase : EntityBase, IComparable<AttributeBase>
     {
         private string _displayName;
         private int _value;

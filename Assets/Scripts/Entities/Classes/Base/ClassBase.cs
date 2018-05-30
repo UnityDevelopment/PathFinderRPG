@@ -2,7 +2,7 @@
 {
     using System;
 
-    public abstract class ClassBase : ObjectBase, IComparable<ClassBase>
+    public abstract class ClassBase : EntityBase, IComparable<ClassBase>
     {
         protected string _displayName;
         protected  Dice.DieType _hitDie;

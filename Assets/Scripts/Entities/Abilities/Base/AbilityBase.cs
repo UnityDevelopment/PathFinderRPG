@@ -5,7 +5,7 @@
     /// <summary>
     /// Provides common functionality to all derived ability classes
     /// </summary>
-    public abstract class AbilityBase : ObjectBase, IComparable<AbilityBase>
+    public abstract class AbilityBase : EntityBase, IComparable<AbilityBase>
     {
         private int _displayOrder;
         private string _displayName;

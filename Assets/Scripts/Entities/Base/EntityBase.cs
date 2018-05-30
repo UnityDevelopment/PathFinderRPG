@@ -2,7 +2,7 @@
 {
     using UnityEngine;
 
-    public abstract class ObjectBase : ScriptableObject
+    public abstract class EntityBase : ScriptableObject
     {
         // Note : Intentionally empty
     }

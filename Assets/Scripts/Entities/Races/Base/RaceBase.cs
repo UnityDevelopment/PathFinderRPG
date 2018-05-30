@@ -5,7 +5,7 @@
 
     using PathfinderRPG.Entities.Abilities;
 
-    public abstract class RaceBase : ObjectBase, IComparable<RaceBase>
+    public abstract class RaceBase : EntityBase, IComparable<RaceBase>
     {
         private string _displayName;
         private List<AbilityModifier> _abilityModifiers;
