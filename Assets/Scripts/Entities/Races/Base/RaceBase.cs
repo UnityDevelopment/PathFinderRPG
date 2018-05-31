@@ -4,11 +4,14 @@
     using System.Collections.Generic;
 
     using PathfinderRPG.Entities.Abilities;
+    using PathfinderRPG.Entities.Races.Languages;
 
     public abstract class RaceBase : EntityBase, IComparable<RaceBase>
     {
         private string _displayName;
         private List<AbilityModifier> _abilityModifiers;
+        private List<Language> _knownLanguages;
+        private List<Language> _learnableLanguages;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="RaceBase" /> class
@@ -34,6 +37,24 @@
         {
             get { return _abilityModifiers; }
             protected set { _abilityModifiers = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the known languages of the race
+        /// </summary>
+        public List<Language> KnownLanguages
+        {
+            get { return _knownLanguages; }
+            protected set { _knownLanguages = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the learnable languages of the race
+        /// </summary>
+        public List<Language> LearnableLanguages
+        {
+            get { return _learnableLanguages; }
+            protected set { _learnableLanguages = value; }
         }
 
         /// <summary>
@@ -69,9 +90,19 @@
         }
 
         /// <summary>
-        /// Sets the racial ability modifiers of the character race
+        /// Sets the ability modifiers of the character race
         /// </summary>
-        protected abstract void SetRacialAbilityModifiers();
+        protected abstract void SetAbilityModifiers();
+
+        /// <summary>
+        /// Sets the known languages of the character race
+        /// </summary>
+        protected abstract void SetKnownLanguages();
+
+        /// <summary>
+        /// Sets the learnable languages of the character race
+        /// </summary>
+        protected abstract void SetLearnableLanguages();
 
         /// <summary>
         /// Sets the display name of the character race
@@ -84,7 +115,9 @@
         private void Initialise()
         {
             SetDisplayName();
-            SetRacialAbilityModifiers();
+            SetAbilityModifiers();
+            SetKnownLanguages();
+            SetLearnableLanguages();
         }
 
         /// <summary>

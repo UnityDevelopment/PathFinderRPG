@@ -7,6 +7,7 @@
     using PathfinderRPG.Entities.Abilities;
     using PathfinderRPG.Entities.Classes;
     using PathfinderRPG.Entities.Races;
+    using PathfinderRPG.Entities.Races.Languages;
 
     /// <summary>
     /// Provides functionality to create a character

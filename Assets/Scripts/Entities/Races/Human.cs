@@ -3,11 +3,12 @@
     using System.Collections.Generic;
 
     using PathfinderRPG.Entities.Abilities;
+    using PathfinderRPG.Entities.Races.Languages;
 
-    public class Human : RaceBase 
+    public class Human : RaceBase
     {
         /// <summary>
-        /// Sets the friendly name for the specific character race
+        /// Sets the display name for the specific character race
         /// </summary>
         protected override void SetDisplayName()
         {
@@ -17,9 +18,35 @@
         /// <summary>
         /// Populates a list containing ability modifiers for the specific character race
         /// </summary>
-        protected override void SetRacialAbilityModifiers()
+        protected override void SetAbilityModifiers()
         {
             AbilityModifiers = new List<AbilityModifier> { };
+        }
+
+        /// <summary>
+        /// Populates a list containing known languages for the specific character race
+        /// </summary>
+        protected override void SetKnownLanguages()
+        {
+            KnownLanguages = new List<Language>
+            {
+                new Common()
+            };
+        }
+
+        /// <summary>
+        /// Populates a list containing learnable languages for the specific character race
+        /// </summary>
+        protected override void SetLearnableLanguages()
+        {
+            List<Language> learnableLanguages = LanguageCollection.GetLanguages();
+
+            foreach (Language knownLanguage in KnownLanguages)
+            {
+                learnableLanguages.Remove(knownLanguage);
+            }
+
+            LearnableLanguages = learnableLanguages;
         }
     }
 }
