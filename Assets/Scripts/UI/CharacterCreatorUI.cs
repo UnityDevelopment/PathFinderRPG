@@ -44,6 +44,18 @@
         public Text _wisdomModifier;
         public Text _charismaModifier;
 
+        [Space(10f)]
+
+        [Header("Roll for Ability Buttons")]
+        public GameObject _rollForStrength;
+        public GameObject _rollForDexterity;
+        public GameObject _rollForConstitution;
+        public GameObject _rollForIntelligence;
+        public GameObject _rollForWisdom;
+        public GameObject _rollForCharisma;
+
+        [Space(10f)]
+
         [Header("Race")]
         public Dropdown _characterRace;
 
@@ -62,6 +74,7 @@
         /// </summary>
         public void RollStrength()
         {
+            DisableButton(typeof(Strength));
             UpdateAbilityScore(typeof(Strength));
             UpdateAbilityModifier(typeof(Strength));
         }
@@ -71,6 +84,7 @@
         /// </summary>
         public void RollDexterity()
         {
+            DisableButton(typeof(Dexterity));
             UpdateAbilityScore(typeof(Dexterity));
             UpdateAbilityModifier(typeof(Dexterity));
         }
@@ -80,6 +94,7 @@
         /// </summary>
         public void RollConstitution()
         {
+            DisableButton(typeof(Constitution));
             UpdateAbilityScore(typeof(Constitution));
             UpdateAbilityModifier(typeof(Constitution));
         }
@@ -89,6 +104,7 @@
         /// </summary>
         public void RollIntelligence()
         {
+            DisableButton(typeof(Intelligence));
             UpdateAbilityScore(typeof(Intelligence));
             UpdateAbilityModifier(typeof(Intelligence));
         }
@@ -98,6 +114,7 @@
         /// </summary>
         public void RollWisdom()
         {
+            DisableButton(typeof(Wisdom));
             UpdateAbilityScore(typeof(Wisdom));
             UpdateAbilityModifier(typeof(Wisdom));
         }
@@ -107,6 +124,7 @@
         /// </summary>
         public void RollCharisma()
         {
+            DisableButton(typeof(Charisma));
             UpdateAbilityScore(typeof(Charisma));
             UpdateAbilityModifier(typeof(Charisma));
         }
@@ -241,6 +259,19 @@
         private void PopulateDropdown(Dropdown dropdown, List<string> optionItems)
         {
             dropdown.AddOptions(optionItems);
+        }
+
+        /// <summary>
+        /// Disables the roll for ability button for the specified ability type
+        /// </summary>
+        /// <param name="abilityType">The character ability type</param>
+        public void DisableButton(Type abilityType)
+        {
+            GameObject buttonGameobject = GetAbilityButtonGameObject(abilityType);
+
+            Button button = buttonGameobject.GetComponent<Button>();
+
+            button.interactable = false;
         }
 
         /// <summary>
@@ -496,6 +527,44 @@
             }
 
             return abilityModifierGameObject;
+        }
+
+        /// <summary>
+        /// Returns the ability's button GameObject for the specified character ability type
+        /// </summary>
+        /// <param name="characterAbilityType">The character ability type</param>
+        /// <returns>The corresponding button GameObject for the character ability's</returns>
+        private GameObject GetAbilityButtonGameObject(Type characterAbilityType)
+        {
+            GameObject abilityButtonGameObject = null;
+
+            // TODO: Improve this.  Could we use an IDictionary to map TextUI objects to types?
+            if (characterAbilityType == typeof(Strength))
+            {
+                abilityButtonGameObject = _rollForStrength;
+            }
+            else if (characterAbilityType == typeof(Dexterity))
+            {
+                abilityButtonGameObject = _rollForDexterity;
+            }
+            else if (characterAbilityType == typeof(Constitution))
+            {
+                abilityButtonGameObject = _rollForConstitution;
+            }
+            else if (characterAbilityType == typeof(Intelligence))
+            {
+                abilityButtonGameObject = _rollForIntelligence;
+            }
+            else if (characterAbilityType == typeof(Wisdom))
+            {
+                abilityButtonGameObject = _rollForWisdom;
+            }
+            else if (characterAbilityType == typeof(Charisma))
+            {
+                abilityButtonGameObject = _rollForCharisma;
+            }
+
+            return abilityButtonGameObject;
         }
 
         /// <summary>
