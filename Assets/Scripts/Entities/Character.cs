@@ -29,12 +29,11 @@
         private int _charismaModifier;
 
         private RaceBase _characterRace;
-        private ClassBase _characterClass;
+        private ClassBase _favouredClass;
 
         private int _baseHealth;
         private int _health;
 
-        private int _level;
         private int _experience;
 
         /// <summary>
@@ -69,8 +68,7 @@
         /// <param name="wisdomModifier">The character's wisdom modifier</param>
         /// <param name="charismaModifier">The character's charisma modifier</param> 
         /// <param name="characterRace">The character's race</param>
-        /// <param name="characterClass">The character's class</param>
-        /// <param name="level">The character's level</param>
+        /// <param name="favouredClass">The character's favoured class</param>
         /// <param name="experience">The character's experience</param>
         /// <param name="hitDie">The character's hit die</param>
         /// <param name="health">The character's base health</param>
@@ -90,8 +88,7 @@
                int wisdomModifier,
                int charismaModifier,
                RaceBase characterRace,
-               ClassBase characterClass,
-               int level,
+               ClassBase favouredClass,
                int experience
             )
         {
@@ -112,8 +109,7 @@
                     wisdomModifier,
                     charismaModifier,
                     characterRace,
-                    characterClass,
-                    level,
+                    favouredClass,
                     experience
                 );
 
@@ -136,8 +132,7 @@
         /// <param name="wisdomModifier">The character's wisdom modifier</param>
         /// <param name="charismaModifier">The character's charisma modifier</param>
         /// <param name="characterRace">The character's race</param>
-        /// <param name="characterClass">The character's class</param>
-        /// <param name="level">The character's level</param>
+        /// <param name="favouredClass">The character's favoured class</param>
         /// <param name="experience">The character's experience</param>
         private void Initialise
         (
@@ -154,8 +149,7 @@
             int wisdomModifier,
             int charismaModifier,
             RaceBase characterRace,
-            ClassBase characterClass,
-            int level,
+            ClassBase favouredClass,
             int experience
         )
         {
@@ -181,9 +175,8 @@
             _charismaModifier = charismaModifier;
 
             _characterRace = characterRace;
-            _characterClass = characterClass;
+            _favouredClass = favouredClass;
 
-            _level = level;
             _experience = experience;
 
             CalculateHealth();
@@ -195,7 +188,7 @@
         private void CalculateHealth()
         {
             // NOTE: Assumes level 1 "new" character creation
-            _baseHealth = (int)_characterClass.HitDie;
+            _baseHealth = (int)_favouredClass.HitDie;
             _health = _baseHealth;
         }
     }

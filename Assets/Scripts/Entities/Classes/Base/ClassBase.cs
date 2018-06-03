@@ -5,14 +5,24 @@
     public abstract class ClassBase : EntityBase, IComparable<ClassBase>
     {
         protected string _displayName;
+        protected int _level;
         protected  Dice.DieType _hitDie;
+        
+         /// <summary>
+        /// Initialises a new instance of the <see cref="ClassBase" /> class for the specified level
+        /// </summary>
+        protected ClassBase(int level)
+        {
+            Initialise(level);
+        }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="ClassBase" /> class
+        /// Prevents a default instance of the<see cref="ClassBase" /> class from being created
         /// </summary>
         protected ClassBase()
         {
-            Initialise();
+            // TODO: Hard coded initial level
+            Initialise(1);
         }
 
         /// <summary>
@@ -31,6 +41,15 @@
         {
             get { return _hitDie; }
             protected set { _hitDie = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the class's level
+        /// </summary>
+        public int Level
+        {
+            get { return _level; }
+            private set { _level = value; }
         }
 
         /// <summary>
@@ -56,8 +75,11 @@
         /// <summary>
         /// Initialises the instance of the object
         /// </summary>
-        private void Initialise()
+        /// <param name="level">The level of the class</param>
+        private void Initialise(int level)
         {
+            Level = level;
+
             SetDisplayName();
             SetHitDie();
         }

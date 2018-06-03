@@ -183,7 +183,6 @@
             int charismaModifier = ParseAbilityModifier(typeof(Charisma));
             RaceBase characterRace = GetCharacterRace();
             ClassBase characterClass = GetCharacterClass();
-            int level = ParseAttribute(typeof(Level));
             int experience = ParseAttribute(typeof(Experience));
 
             Character character = CharacterCreator.Create
@@ -202,7 +201,6 @@
                     charismaModifier,
                     characterRace,
                     characterClass,
-                    level,
                     experience
                 );
 
@@ -398,9 +396,10 @@
         {
             // TODO: Displayed health will need to be calculated differently if level selection is available later
             UpdateAttribute(typeof(Health), (int)characterClass.HitDie);
+            UpdateAttribute(typeof(Level), characterClass.Level);
 
-            // TODO: Character level may be/may need to be selectable in a furture version
-            PopulateLevel1Attributes();
+            // TODO: Hard coded value of 0 
+            UpdateAttribute(typeof(Experience), 0);
         }
 
         /// <summary>
@@ -729,15 +728,6 @@
             int racialAbilityModifier = ParseRacialAbilityModifier(characterAbilityType);
 
             return CharacterCreator.CalculateBaseAbility(abilityScore, racialAbilityModifier);
-        }
-
-        /// <summary>
-        /// Populate level 1 character attributes
-        /// </summary>
-        private void PopulateLevel1Attributes()
-        {
-            _level.text = 1.ToString();
-            _experience.text = 0.ToString();
         }
     }
 }

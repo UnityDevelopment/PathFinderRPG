@@ -82,10 +82,15 @@
         /// Searches for a class within the collection with the specified <paramref name="displayName"/>
         /// </summary>
         /// <param name="displayName">The display name</param>
+        /// <param name="level">The level of the character</param>
         /// <returns>A character class corresponding to the specified display name.  Returns null if a specific class is not found.</returns>
         public static ClassBase GetCharacterClass(string displayName)
         {
-            return ClassCollection.FindClass(displayName);
+            Type characterClassType = ClassCollection.FindClass(displayName).GetType();
+
+            ClassBase characterClass = (ClassBase)Activator.CreateInstance(Type.GetType(characterClassType.ToString()));
+
+            return characterClass;
         }
 
         /// <summary>
@@ -163,7 +168,6 @@
         /// <param name="charismaModifier">The character's charisma modifier</param> 
         /// <param name="characterRace">The character's race</param>
         /// <param name="characterClass">The character's class</param>
-        /// <param name="level">The character's level</param>
         /// <param name="experience">The character's experience</param>
         /// <returns>Character</returns>
         public static Character Create
@@ -182,7 +186,6 @@
            int charismaModifier,
            RaceBase characterRace,
            ClassBase characterClass,
-           int level,
            int experience
         )
         {
@@ -202,7 +205,6 @@
                 charismaModifier,
                 characterRace,
                 characterClass,
-                level,
                 experience
             );
 
