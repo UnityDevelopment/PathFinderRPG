@@ -7,7 +7,7 @@
         /// </summary>
         protected override void SetDisplayName()
         {
-            DisplayName = @"Aquan (""Tongue of the Heavens"")";
+            DisplayName = @"Auran (""Tongue of the Heavens"")";
         }
     }
 }
