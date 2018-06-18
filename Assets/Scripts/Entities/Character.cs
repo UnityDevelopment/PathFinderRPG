@@ -1,7 +1,10 @@
 ﻿namespace PathfinderRPG.Entities
 {
-    using PathfinderRPG.Entities.Races;
+    using System.Collections.Generic;
+
     using PathfinderRPG.Entities.Classes;
+    using PathfinderRPG.Entities.Races;
+    using PathfinderRPG.Entities.Races.Languages;
 
     using UnityEngine;
 
@@ -29,7 +32,10 @@
         private int _charismaModifier;
 
         private RaceBase _characterRace;
+        private List<Language> _knownLanguages;
         private ClassBase _favouredClass;
+
+        private List<ClassBase> _classes;
 
         private int _baseHealth;
         private int _health;
@@ -68,6 +74,7 @@
         /// <param name="wisdomModifier">The character's wisdom modifier</param>
         /// <param name="charismaModifier">The character's charisma modifier</param> 
         /// <param name="characterRace">The character's race</param>
+        /// <param name="knownLanguages">The character's known languages</param>
         /// <param name="favouredClass">The character's favoured class</param>
         /// <param name="experience">The character's experience</param>
         /// <param name="hitDie">The character's hit die</param>
@@ -88,6 +95,7 @@
                int wisdomModifier,
                int charismaModifier,
                RaceBase characterRace,
+               List<Language> knownLanguages,
                ClassBase favouredClass,
                int experience
             )
@@ -109,6 +117,7 @@
                     wisdomModifier,
                     charismaModifier,
                     characterRace,
+                    knownLanguages,
                     favouredClass,
                     experience
                 );
@@ -132,6 +141,7 @@
         /// <param name="wisdomModifier">The character's wisdom modifier</param>
         /// <param name="charismaModifier">The character's charisma modifier</param>
         /// <param name="characterRace">The character's race</param>
+        /// <param name="knownLanguages">The character's known languages</param>
         /// <param name="favouredClass">The character's favoured class</param>
         /// <param name="experience">The character's experience</param>
         private void Initialise
@@ -149,6 +159,7 @@
             int wisdomModifier,
             int charismaModifier,
             RaceBase characterRace,
+            List<Language> knownLanguages,
             ClassBase favouredClass,
             int experience
         )
@@ -175,6 +186,7 @@
             _charismaModifier = charismaModifier;
 
             _characterRace = characterRace;
+            _knownLanguages = knownLanguages;
             _favouredClass = favouredClass;
 
             _experience = experience;

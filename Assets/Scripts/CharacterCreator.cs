@@ -7,7 +7,7 @@
     using PathfinderRPG.Entities.Abilities;
     using PathfinderRPG.Entities.Classes;
     using PathfinderRPG.Entities.Races;
-    using PathfinderRPG.Entities.Races.Languages;
+    using PathfinderRPG.Entities.Races.Languages;    
 
     /// <summary>
     /// Provides functionality to create a character
@@ -167,6 +167,7 @@
         /// <param name="wisdomModifier">The character's wisdom modifier</param>
         /// <param name="charismaModifier">The character's charisma modifier</param> 
         /// <param name="characterRace">The character's race</param>
+        /// <param name="bonusLanguages">The character's chosen bonus languages</param>
         /// <param name="characterClass">The character's class</param>
         /// <param name="experience">The character's experience</param>
         /// <returns>Character</returns>
@@ -185,6 +186,7 @@
            int wisdomModifier,
            int charismaModifier,
            RaceBase characterRace,
+           List<Language> bonusLanguages,
            ClassBase characterClass,
            int experience
         )
@@ -204,6 +206,7 @@
                 wisdomModifier,
                 charismaModifier,
                 characterRace,
+                bonusLanguages,
                 characterClass,
                 experience
             );

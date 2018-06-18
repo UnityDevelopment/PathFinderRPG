@@ -1,9 +1,8 @@
-﻿namespace PathfinderRPG.Entities.Abilities
+﻿namespace PathfinderRPG.Entities.Races.Languages
 {
     using System.Collections.Generic;
     using System.Linq;
 
-    using PathfinderRPG.Entities.Races.Languages;
     using PathfinderRPG.Utilities;
 
     public static class LanguageCollection

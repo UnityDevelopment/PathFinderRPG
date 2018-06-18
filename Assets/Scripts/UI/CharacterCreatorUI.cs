@@ -8,6 +8,7 @@
     using PathfinderRPG.Entities.Attributes;
     using PathfinderRPG.Entities.Classes;
     using PathfinderRPG.Entities.Races;
+    using PathfinderRPG.Entities.Races.Languages;
     using PathfinderRPG.Extensions;
 
     using UnityEngine;
@@ -59,6 +60,15 @@
         [Header("Race")]
         public Dropdown _characterRace;
 
+        [Space(10f)]
+
+        public GameObject _knownLanguagesContainer;
+        public GameObject _knownLanguages;
+
+        [Space(10f)]
+        public GameObject _learnableLanguagesContainer;
+        public GameObject _learnableLanguages;
+
         [Header("Class")]
         public Dropdown _characterClass;
 
@@ -107,6 +117,8 @@
             DisableButton(typeof(Intelligence));
             UpdateAbilityScore(typeof(Intelligence));
             UpdateAbilityModifier(typeof(Intelligence));
+
+            ToggleLearnableLanguages();
         }
 
         /// <summary>
@@ -138,6 +150,9 @@
 
             UpdateRacialAbilityModifiers(characterRace);
             UpdateAbilityModifiers();
+
+            UpdateKnownLanguages();
+            UpdateLearnableLanguages();
         }
 
         /// <summary>
@@ -182,6 +197,7 @@
             int wisdomModifier = ParseAbilityModifier(typeof(Wisdom));
             int charismaModifier = ParseAbilityModifier(typeof(Charisma));
             RaceBase characterRace = GetCharacterRace();
+            List<Language> bonusLanguages = GetBonusLanguages();
             ClassBase characterClass = GetCharacterClass();
             int experience = ParseAttribute(typeof(Experience));
 
@@ -200,6 +216,7 @@
                     wisdomModifier,
                     charismaModifier,
                     characterRace,
+                    bonusLanguages,
                     characterClass,
                     experience
                 );
@@ -371,6 +388,8 @@
             UpdateAbilityModifier(typeof(Intelligence));
             UpdateAbilityModifier(typeof(Wisdom));
             UpdateAbilityModifier(typeof(Charisma));
+
+            ToggleLearnableLanguages();
         }
 
         /// <summary>
@@ -386,6 +405,124 @@
             int modifier = CharacterCreator.CalculateAbilityModifier(score, racialModifier);
 
             abilityModifier.text = modifier.ToString(true);
+        }
+
+        // TODO: CharacterRace is being used at least twice now, it would be more efficient to store the 
+        //       selection in a local variable or start to build an object to hold the values than retrieve
+        //       them each time they are required.
+
+        /// <summary>
+        /// Updates the content of the known languages listbox for the currently selected character race
+        /// </summary>
+        private void UpdateKnownLanguages()
+        {
+            RaceBase characterRace = GetCharacterRace();
+            List<Dropdown.OptionData> options = GetOptionData(characterRace.KnownLanguages);
+
+            ListBox knownLanguages = _knownLanguages.GetComponent<ListBox>();
+
+            knownLanguages.ClearOptions();
+            knownLanguages.AddOptions(options, false);
+        }
+
+        /// <summary>
+        /// Updates the content of the learnable languages listbox for the currently selected character race
+        /// </summary>
+        private void UpdateLearnableLanguages()
+        {
+            RaceBase characterRace = GetCharacterRace();
+            List<Dropdown.OptionData> options = GetOptionData(characterRace.LearnableLanguages);
+
+            ListBox learnableLanguages = _learnableLanguages.GetComponent<ListBox>();
+
+            learnableLanguages.ClearOptions();
+            learnableLanguages.AddOptions(options, true);
+        }
+
+        /// <summary>
+        /// Enables or disables the learnable languages listbox
+        /// </summary>
+        private void ToggleLearnableLanguages()
+        {
+            RaceBase characterRace = GetCharacterRace();
+            int modifier = ParseAbilityModifier(typeof(Intelligence));
+
+            if (modifier > 0 && characterRace)
+            {
+                _learnableLanguagesContainer.SetActive(true);
+            }
+            else
+            {
+                _learnableLanguagesContainer.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Adds the selected language from the learnable languages ListBox to the known languages ListBox
+        /// </summary>
+        /// <param name="index">The index value of the language</param>
+        public void AddKnownLanguage(int index)
+        {
+            ListBox learnableLanguages = _learnableLanguages.GetComponent<ListBox>();
+            ListBox knownLanguages = _knownLanguages.GetComponent<ListBox>();
+            ListItem listItem = learnableLanguages.GetListItem(index);
+
+            if (listItem.IsRemoveable)
+            {
+                ListBox.MoveItem(index, learnableLanguages, knownLanguages, true);
+            }
+
+            // TODO: The following code prevents more bonus languages been added than should be, needs moving/refactoring
+            RaceBase characterRace = GetCharacterRace();
+
+            int initialLanguages = characterRace.KnownLanguages.Count;
+            int addedLanguages = knownLanguages.Options.Count - initialLanguages;
+            int intelligenceModifier = ParseAbilityModifier(typeof(Intelligence));
+
+            // all bonus languages have been added
+            if (addedLanguages == intelligenceModifier)
+            {
+                // set all learnable languages to IsRemoveable = false
+                foreach(Transform option in learnableLanguages.content.transform)
+                {
+                    listItem = option.GetComponent<ListItem>();
+                    listItem.IsRemoveable = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the selected language from the known languages ListBox, replacing back into the learnable languages ListBox, if the language is removeable
+        /// </summary>
+        /// <param name="index">The index value of the language</param>
+        public void RemoveKnownLanguage(int index)
+        {
+            ListBox knownLanguages = _knownLanguages.GetComponent<ListBox>();
+            ListBox learnableLanguages = _learnableLanguages.GetComponent<ListBox>();
+            ListItem listItem = knownLanguages.GetListItem(index);
+
+            if (listItem.IsRemoveable)
+            {
+                ListBox.MoveItem(index, knownLanguages, learnableLanguages, true);
+            }
+
+            // TODO: The following code prevents more bonus languages been added than should be, needs moving/refactoring
+            RaceBase characterRace = GetCharacterRace();
+
+            int initialLanguages = characterRace.KnownLanguages.Count;
+            int addedLanguages = knownLanguages.Options.Count - initialLanguages;
+            int intelligenceModifier = ParseAbilityModifier(typeof(Intelligence));
+
+            // all bonus languages have been added
+            if (addedLanguages < intelligenceModifier)
+            {
+                // set all learnable languages to IsRemoveable = true
+                foreach (Transform option in learnableLanguages.content.transform)
+                {
+                    listItem = option.GetComponent<ListItem>();
+                    listItem.IsRemoveable = true;
+                }
+            }
         }
 
         /// <summary>
@@ -728,6 +865,65 @@
             int racialAbilityModifier = ParseRacialAbilityModifier(characterAbilityType);
 
             return CharacterCreator.CalculateBaseAbility(abilityScore, racialAbilityModifier);
+        }
+
+        /// <summary>
+        /// Returns a list of OptionData objects for the specified languages
+        /// </summary>
+        /// <param name="languages">The list of languages</param>
+        /// <returns>A list of languages as OptionData objects</returns>
+        private List<Dropdown.OptionData> GetOptionData(List<Language> languages)
+        {
+            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+
+            foreach (Language language in languages)
+            {
+                Dropdown.OptionData option = new Dropdown.OptionData(language.DisplayName);
+
+                options.Add(option);
+            }
+
+            return options;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private List<Language> GetBonusLanguages()
+        {
+            List<Language> bonusLanguages = new List<Language>();
+
+            // grab known languages
+            ListBox knownLanguages = _knownLanguages.GetComponent<ListBox>();
+
+            // iterate
+            foreach(Dropdown.OptionData option in knownLanguages.Options)
+            {
+                // use name to Find actual language in LanguagesCollection
+                Language language = LanguageCollection.FindLanguage(option.text);
+
+                // add language to bonus languages list
+                bonusLanguages.Add(language);
+            }
+
+
+            //for(int i = 0; i < knownLanguages.Options.Count; i++)
+            //{
+            //    //// ignore "isRemoveable = false"
+            //    //ListItem listItem = knownLanguages.GetListItem(i);
+
+            //    //if(listItem.IsRemoveable == true)
+            //    //{
+            //        // use name to Find actual language in LanguagesCollection
+            //        Language language = LanguageCollection.FindLanguage(knownLanguages.Options[i].text);
+            //        // add language to bonus languages list
+            //        bonusLanguages.Add(language);
+            //    //}
+            //}
+
+            // return list
+            return bonusLanguages;
         }
     }
 }

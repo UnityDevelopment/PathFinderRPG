@@ -39,7 +39,7 @@
         /// </summary>
         protected override void SetLearnableLanguages()
         {
-            List<Language> learnableLanguages = LanguageCollection.GetLanguages();
+            List<Language> learnableLanguages = new List<Language>(LanguageCollection.GetLanguages());
 
             foreach (Language knownLanguage in KnownLanguages)
             {
